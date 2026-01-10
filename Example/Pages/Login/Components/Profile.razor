@@ -22,11 +22,11 @@ else
         <MudCardHeader>
             <CardHeaderAvatar>
                 <MudAvatar Color="Color.Secondary">
-                    @_currentUser.Username?.Substring(0, 1).ToUpper()
+                    @_currentUser.UserName?.Substring(0, 1).ToUpper()
                 </MudAvatar>
             </CardHeaderAvatar>
             <CardHeaderContent>
-                <MudText Typo="Typo.body1">@_currentUser.Username</MudText>
+                <MudText Typo="Typo.body1">@_currentUser.UserName</MudText>
                 <MudText Typo="Typo.body2">@string.Format("Created: {0:dd.MM.yyyy}", _currentUser.Created)</MudText>
             </CardHeaderContent>
         </MudCardHeader>

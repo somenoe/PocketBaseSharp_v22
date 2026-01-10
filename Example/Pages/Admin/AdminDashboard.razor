@@ -1,0 +1,15 @@
+@page "/admin/dashboard"
+@using Example.Pages.Admin.Components
+
+<AuthorizeView>
+    <Authorized>
+        <AdminProfile />
+    </Authorized>
+    <NotAuthorized>
+        <MudCard>
+            <MudCardContent>
+                <MudText>Access Denied. Please <MudLink Href="/admin/login">login as admin</MudLink>.</MudText>
+            </MudCardContent>
+        </MudCard>
+    </NotAuthorized>
+</AuthorizeView>

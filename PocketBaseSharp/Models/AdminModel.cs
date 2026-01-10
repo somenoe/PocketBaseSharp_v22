@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-
-namespace PocketBaseSharp.Models
+﻿namespace PocketBaseSharp.Models
 {
-    public class AdminModel : BaseModel
+    /// <summary>
+    /// Represents a PocketBase superuser (admin) model.
+    /// Inherits authentication properties from BaseAuthModel (email, emailVisibility, verified).
+    /// </summary>
+    public class AdminModel : BaseAuthModel
     {
-        [JsonPropertyName("email")]
-        public string? Email { get; set; }
-
-        [JsonPropertyName("avatar")]
-        public int? Avatar { get; set; }
+        // Email, EmailVisibility, Verified are inherited from BaseAuthModel
+        // Avatar and Username are not present in the _superusers collection
     }
 }

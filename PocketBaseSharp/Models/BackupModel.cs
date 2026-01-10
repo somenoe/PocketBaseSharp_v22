@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PocketBaseSharp.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace PocketBaseSharp.Models
         public int? Size { get; set; }
 
         [JsonPropertyName("modified")]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime? Modified { get; set; }
     }
 }
