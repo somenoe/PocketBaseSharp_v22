@@ -16,11 +16,12 @@ Community-developed, open-source C# SDK for [PocketBase](https://pocketbase.io/)
 
 -  Authentication (user/admin)
 -  Real-time subscriptions
--  Batch operations (create/update/delete) **(NEW)**
+-  Batch operations (create/update/delete)
 -  File uploads/downloads
--  Blazor & .NET 10 compatible **(NEW)**
--  Mudblazor demo Blazor WASM app **(NEW)**
--  Pocketbase v0.28.4 **(NEW)**
+-  **Backup Management** (create, download, restore, delete backups) **(NEW)**
+-  Blazor & .NET 10 compatible
+-  Mudblazor demo Blazor WASM app with admin dashboard **(NEW)**
+-  Pocketbase v0.28.4
 
 
 ## Acknowledgments
@@ -48,9 +49,18 @@ This fork exists with his approval.
 Email: `admin@admin.com`
 PW: `demo123456`
 
-**Example blazor demo login:** 
+**Example blazor demo login (User):**
 Email: `admin@admin.com`
 PW: `demo1234`
+
+**Example blazor admin dashboard:**
+Access the admin dashboard at `/admin/login` with:
+Email: `admin@admin.com`
+PW: `demo123456` (PocketBase admin password)
+
+The admin dashboard includes:
+- Admin authentication
+- Database backup management (create, download, restore, delete)
 
 `example/wwwroot/appsettings.json` to change PocketBase instance address.
 
@@ -79,6 +89,24 @@ Query some data (for example, some ToDo items)
 Note: Each CRUD action requires a data type which inherits from the base class 'BaseModel'.
 
     var restaurantList = await client.Collection("todos").GetFullListAsync<todos>();
+
+Manage backups (Admin only)
+
+    // Create a new backup
+    var result = await client.Backup.CreateAsync("my-backup.zip");
+
+    // List all backups
+    var backups = await client.Backup.GetFullListAsync();
+
+    // Download a backup
+    var stream = await client.Backup.DownloadAsync("my-backup.zip");
+
+    // Restore from backup (⚠️ Destructive - replaces current database)
+    await client.Backup.RestoreAsync("my-backup.zip");
+    (not functional when pocketbase is hosted by windows. Will work with Linux though.
+
+    // Delete a backup
+    await client.Backup.DeleteAsync("my-backup.zip");
 
 
 ## Development

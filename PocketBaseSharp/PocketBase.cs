@@ -222,6 +222,12 @@ namespace PocketBaseSharp
                     return Result.Fail(error);
                 }
 
+                // Handle 204 No Content responses (e.g., backup creation)
+                if ((int)response.StatusCode == 204)
+                {
+                    return Result.Ok(default(T)!);
+                }
+
                 var parsedResponse =
                     await response.Content.ReadFromJsonAsync<T>(jsonSerializerOptions, cancellationToken);
                 return Result.Ok(parsedResponse!);
@@ -269,6 +275,12 @@ namespace PocketBaseSharp
                     return Result.Fail(error);
                 }
 
+                // Handle 204 No Content responses (e.g., backup creation)
+                if ((int)response.StatusCode == 204)
+                {
+                    return Result.Ok(default(T)!);
+                }
+
                 using var stream = response.Content.ReadAsStream();
                 var parsedResponse = JsonSerializer.Deserialize<T>(stream, jsonSerializerOptions);
                 return Result.Ok(parsedResponse!);
@@ -291,9 +303,29 @@ namespace PocketBaseSharp
 
             Uri url = BuildUrl(path, query);
 
+            HttpRequestMessage request = CreateRequest(url, HttpMethod.Get, headers: new Dictionary<string, string>(), query: query, body: new Dictionary<string, object>(), files: new List<IFile>());
+
             try
             {
-                var stream = await _httpClient.GetStreamAsync(url, cancellationToken);
+                if (BeforeSend is not null)
+                {
+                    request = BeforeSend.Invoke(this, new RequestEventArgs(url, request));
+                }
+
+                var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+                if (AfterSend is not null)
+                {
+                    AfterSend.Invoke(this, new ResponseEventArgs(url, response));
+                }
+
+                if ((int)response.StatusCode >= 400)
+                {
+                    ClientError error = new ClientError(HttpMethod.Get, url.ToString(), (int)response.StatusCode);
+                    return Result.Fail(error);
+                }
+
+                var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
                 return Result.Ok(stream);
             }
             catch (Exception ex)
@@ -306,6 +338,17 @@ namespace PocketBaseSharp
 
                 return Result.Fail(new Error(ex.Message));
             }
+        }
+
+        public async Task<Result<string>> GetFileTokenAsync(CancellationToken cancellationToken = default)
+        {
+            var url = "/api/files/token";
+            var result = await SendAsync<FileTokenResponse>(url, HttpMethod.Post, cancellationToken: cancellationToken);
+            if (result.IsSuccess && !string.IsNullOrWhiteSpace(result.Value?.Token))
+            {
+                return Result.Ok(result.Value.Token);
+            }
+            return Result.Fail("Failed to obtain file token");
         }
 
         private HttpRequestMessage CreateRequest(Uri url, HttpMethod method, IDictionary<string, string> headers, IDictionary<string, object?> query, IDictionary<string, object> body, IEnumerable<IFile> files)

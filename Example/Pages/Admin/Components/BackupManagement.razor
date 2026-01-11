@@ -1,0 +1,92 @@
+@using PocketBaseSharp
+@using PocketBaseSharp.Models
+@using MudBlazor
+@inject PocketBase PocketBase
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Database Backup Management</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudStack Spacing="3">
+            <!-- Create Backup Section -->
+            <MudPaper Class="pa-4" Elevation="0" Outlined="true">
+                <MudText Typo="Typo.subtitle1" Class="mb-3">Create New Backup</MudText>
+                <MudStack Row="true" Spacing="2" Style="align-items: center;">
+                    <MudTextField @bind-Text="BackupName" T="string" Label="Backup Name (optional)" Placeholder="Leave empty for auto-generated name" Variant="Variant.Outlined" Style="flex: 1;"></MudTextField>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="CreateBackupAsync" Disabled="IsLoading">
+                        @if (IsLoading)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Creating...</MudText>
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.CloudUpload" />
+                            <MudText Class="ms-2">Create Backup</MudText>
+                        }
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+
+            <!-- Backups List Section -->
+            <MudPaper Class="pa-4" Elevation="0" Outlined="true">
+                <MudStack Spacing="2">
+                    <MudStack Row="true" Spacing="2" Style="justify-content: space-between; align-items: center;">
+                        <MudText Typo="Typo.subtitle1">Available Backups</MudText>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" OnClick="RefreshBackupsAsync" Disabled="IsLoading">
+                            <MudIcon Icon="@Icons.Material.Filled.Refresh" />
+                            Refresh
+                        </MudButton>
+                    </MudStack>
+
+                    @if (IsLoading && Backups == null)
+                    {
+                        <MudProgressLinear Indeterminate="true" />
+                        <MudText Align="Align.Center" Class="mt-4">Loading backups...</MudText>
+                    }
+                    else if (Backups == null || !Backups.Any())
+                    {
+                        <MudText Class="mt-4">No backups found. Create one to get started.</MudText>
+                    }
+                    else
+                    {
+                        <MudTable Items="@Backups" Hover="true" Dense="true">
+                            <HeaderContent>
+                                <MudTh>Backup Name</MudTh>
+                                <MudTh>Size</MudTh>
+                                <MudTh>Created</MudTh>
+                                <MudTh>Actions</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Backup Name">@context.Key</MudTd>
+                                <MudTd DataLabel="Size">@FormatBytes(context.Size ?? 0)</MudTd>
+                                <MudTd DataLabel="Created">@context.Modified?.ToString("g")</MudTd>
+                                <MudTd DataLabel="Actions">
+                                    <MudStack Row="true" Spacing="1">
+                                        <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Info" OnClick="@(async () => await DownloadBackupAsync(context.Key))">
+                                            <MudIcon Icon="@Icons.Material.Filled.Download" Size="Size.Small" />
+                                        </MudButton>
+                                        <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Warning" OnClick="@(async () => await RestoreBackupAsync(context.Key))">
+                                            <MudIcon Icon="@Icons.Material.Filled.Restore" Size="Size.Small" />
+                                        </MudButton>
+                                        <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Error" OnClick="@(async () => await DeleteBackupAsync(context.Key))">
+                                            <MudIcon Icon="@Icons.Material.Filled.Delete" Size="Size.Small" />
+                                        </MudButton>
+                                    </MudStack>
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                </MudStack>
+            </MudPaper>
+        </MudStack>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Href="/admin/dashboard" Variant="Variant.Text">Back to Dashboard</MudButton>
+    </MudCardActions>
+</MudCard>

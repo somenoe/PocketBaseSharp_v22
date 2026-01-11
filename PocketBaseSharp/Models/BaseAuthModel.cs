@@ -6,14 +6,14 @@ namespace PocketBaseSharp.Models
     {
         [JsonPropertyName("email")]
         public string? Email { get; set; }
-        
-        [JsonPropertyName("emailVisibility")] 
+
+        [JsonPropertyName("emailVisibility")]
         public bool? EmailVisibility { get; set; }
-        
+
         [JsonPropertyName("username")]
-        public string? Username { get; set; }
-        
+        public string? UserName { get; set; }
         [JsonPropertyName("verified")]
+
         public bool? Verified { get; set; }
     }
 }

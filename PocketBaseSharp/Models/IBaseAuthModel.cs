@@ -6,7 +6,7 @@
 
         bool? EmailVisibility { get; }
 
-        string? Username { get; }
+        string? UserName { get; }
 
         bool? Verified { get; }
     }

@@ -1,0 +1,15 @@
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Admin Login</MudText>
+            <MudText Typo="Typo.body1">Default: admin@admin.com / demo123456</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTextField @bind-Text="Email" T="string" Label="Admin Email" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Text="Password" T="string" Label="Admin Password" Variant="Variant.Outlined" InputType="InputType.Password"></MudTextField>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton EndIcon="@Icons.Material.Filled.Login" Color="Color.Success" OnClick="AdminLoginAsync">Login as Admin</MudButton>
+    </MudCardActions>
+</MudCard>
