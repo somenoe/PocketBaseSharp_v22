@@ -371,3 +371,8 @@ FodyWeavers.xsd
 /pocketbase-csharp-sdk/pocketbase-csharp-sdk.csproj
 !/Example/Options/PocketBaseOptions.cs
 !/Example/wwwroot/appsettings.development.json
+
+# PocketBase files
+PocketBase/CHANGELOG.md
+PocketBase/LICENSE.md
+PocketBase/pocketbase.exe

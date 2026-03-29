@@ -1,20 +1,21 @@
 /// <reference path="../pb_data/types.d.ts" />
-migrate((app) => {
-  const collection = app.findCollectionByNameOrId("pbc_1036457598")
+migrate(
+  (db) => {
+    const dao = new Dao(db);
+    const collection = dao.findCollectionByNameOrId("pbc_1036457598");
 
-  // update collection data
-  unmarshal({
-    "name": "todos"
-  }, collection)
+    // update collection data
+    collection.name = "todos";
 
-  return app.save(collection)
-}, (app) => {
-  const collection = app.findCollectionByNameOrId("pbc_1036457598")
+    return dao.saveCollection(collection);
+  },
+  (db) => {
+    const dao = new Dao(db);
+    const collection = dao.findCollectionByNameOrId("pbc_1036457598");
 
-  // update collection data
-  unmarshal({
-    "name": "ToDo"
-  }, collection)
+    // update collection data
+    collection.name = "ToDo";
 
-  return app.save(collection)
-})
+    return dao.saveCollection(collection);
+  },
+);

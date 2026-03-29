@@ -1,28 +1,29 @@
 /// <reference path="../pb_data/types.d.ts" />
-migrate((app) => {
-  const collection = app.findCollectionByNameOrId("pbc_1036457598")
+migrate(
+  (db) => {
+    const dao = new Dao(db);
+    const collection = dao.findCollectionByNameOrId("pbc_1036457598");
 
-  // update collection data
-  unmarshal({
-    "createRule": "",
-    "deleteRule": "",
-    "listRule": "",
-    "updateRule": "",
-    "viewRule": ""
-  }, collection)
+    // update collection data
+    collection.createRule = "";
+    collection.deleteRule = "";
+    collection.listRule = "";
+    collection.updateRule = "";
+    collection.viewRule = "";
 
-  return app.save(collection)
-}, (app) => {
-  const collection = app.findCollectionByNameOrId("pbc_1036457598")
+    return dao.saveCollection(collection);
+  },
+  (db) => {
+    const dao = new Dao(db);
+    const collection = dao.findCollectionByNameOrId("pbc_1036457598");
 
-  // update collection data
-  unmarshal({
-    "createRule": null,
-    "deleteRule": null,
-    "listRule": null,
-    "updateRule": null,
-    "viewRule": null
-  }, collection)
+    // update collection data
+    collection.createRule = null;
+    collection.deleteRule = null;
+    collection.listRule = null;
+    collection.updateRule = null;
+    collection.viewRule = null;
 
-  return app.save(collection)
-})
+    return dao.saveCollection(collection);
+  },
+);
