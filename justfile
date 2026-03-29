@@ -17,3 +17,12 @@ download-pb:
     rm pocketbase.temp.zip
 
 setup: download-pb
+
+example:
+    dotnet run --project Example/Example.csproj
+
+build:
+    dotnet build
+
+test:
+    dotnet test
