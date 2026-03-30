@@ -5,7 +5,9 @@ set windows-shell := ["pwsh", "-c"]
 default:
     @just --list
 
-pb *COMMAND="serve":
+pb *COMMAND="--automigrate=false --dir='./temp_pb_data' serve":
+    rm -r temp_pb_data || true
+    cp -r PocketBase/pb_data temp_pb_data
     ./PocketBase/pocketbase.exe {{ COMMAND }}
 
 PB_VERSION := "0.22.40"
