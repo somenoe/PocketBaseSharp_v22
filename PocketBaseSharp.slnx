@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Licenses/">
+    <File Path="LICENSE.txt" />
+  </Folder>
+  <Project Path="PocketBaseSharp .Tests/PocketBaseSharp.Tests.csproj" />
+  <Project Path="PocketBaseSharp/PocketBaseSharp.csproj" />
+</Solution>
