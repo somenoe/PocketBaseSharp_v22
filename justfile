@@ -20,9 +20,6 @@ download-pb:
 
 setup: download-pb
 
-example:
-    dotnet run --project Example/Example.csproj
-
 build:
     dotnet build
 

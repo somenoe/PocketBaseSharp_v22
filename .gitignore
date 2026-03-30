@@ -369,8 +369,6 @@ FodyWeavers.xsd
 /pocketbase-csharp-sdk.Tests/RealTest.cs
 /pocketbase-csharp-sdk.Tests/RealTest.cs
 /pocketbase-csharp-sdk/pocketbase-csharp-sdk.csproj
-!/Example/Options/PocketBaseOptions.cs
-!/Example/wwwroot/appsettings.development.json
 
 # PocketBase files
 PocketBase/CHANGELOG.md

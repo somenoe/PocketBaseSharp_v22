@@ -5,72 +5,53 @@
   <img src="https://img.shields.io/badge/MudBlazor-%231e88e5.svg?style=for-the-badge&logo=mudblazor&logoColor=white" alt="MudBlazor"/>
 </div>
 
-
 ## **PocketBaseSharp**
+
 Community-developed, open-source C# SDK for [PocketBase](https://pocketbase.io/) — the lightweight, real-time backend for your apps.
-
-
 
 ### Features
 
-
--  Authentication (user/admin)
--  Real-time subscriptions
--  Batch operations (create/update/delete)
--  File uploads/downloads
--  **Backup Management** (create, download, restore, delete backups) **(NEW)**
--  Blazor & .NET 10 compatible
--  Mudblazor demo Blazor WASM app with admin dashboard **(NEW)**
--  Pocketbase v0.28.4
-
+- Authentication (user/admin)
+- Real-time subscriptions
+- Batch operations (create/update/delete)
+- File uploads/downloads
+- **Backup Management** (create, download, restore, delete backups) **(NEW)**
+- Blazor & .NET 10 compatible
+- Mudblazor demo Blazor WASM app with admin dashboard **(NEW)**
+- Pocketbase v0.28.4
 
 ## Acknowledgments
 
-Special thanks to [**PRCV1** for creating the original PocketBase C# SDK](https://github.com/PRCV1/pocketbase-csharp-sdk) and laying the groundwork for this project. His excellent work made this continuation possible. 
+Special thanks to [**PRCV1** for creating the original PocketBase C# SDK](https://github.com/PRCV1/pocketbase-csharp-sdk) and laying the groundwork for this project. His excellent work made this continuation possible.
 
-This fork exists with his approval. 
+This fork exists with his approval.
 
 ## Installation
 
 **Structure:**
 
- - Example (Blazor demo site)
- - PocketBaseSharp (The SDK) 
- - PocketBaseSharp.Tests
- - PocketBase (Database & windows binary)
+- PocketBaseSharp (The SDK)
+- PocketBaseSharp.Tests
+- PocketBase (Database & windows binary)
 
-**Running the demo project:** 
- - Set `example.csproj` as startup project
- - Open `\PocketBase\pocketbase.exe` in terminal and run the following
-   command to start the PocketBase instance: `pocketbase.exe serve`
- - Visit `http://127.0.0.1:8090/_/` to access the database directly
+**Running PocketBase:**
 
-**Pocketbase admin login:** 
+- Open `\PocketBase\pocketbase.exe` in terminal and run the following
+  command to start the PocketBase instance: `pocketbase.exe serve`
+- Visit `http://127.0.0.1:8090/_/` to access the database directly
+
+**Pocketbase admin login:**
 Email: `admin@admin.com`
 PW: `demo123456`
 
-**Example blazor demo login (User):**
-Email: `admin@admin.com`
-PW: `demo1234`
-
-**Example blazor admin dashboard:**
-Access the admin dashboard at `/admin/login` with:
-Email: `admin@admin.com`
-PW: `demo123456` (PocketBase admin password)
-
-The admin dashboard includes:
-- Admin authentication
-- Database backup management (create, download, restore, delete)
-
-`example/wwwroot/appsettings.json` to change PocketBase instance address.
-
 **Using the SDK:**
 
- - Add PocketSharpSDK to your solution
- - Add PocketSharpSDK to your project as a reference
- - *Nuget package coming in the future*
+- Add PocketSharpSDK to your solution
+- Add PocketSharpSDK to your project as a reference
+- _Nuget package coming in the future_
 
 ## Getting Started
+
 using PocketBaseSharp;
 
 Create a new client which connects to your PocketBase API
@@ -108,12 +89,11 @@ Manage backups (Admin only)
     // Delete a backup
     await client.Backup.DeleteAsync("my-backup.zip");
 
-
 ## Development
 
 ### Requirements
-- .NET 10 
 
+- .NET 10
 
 ## Contributing
 
@@ -135,12 +115,5 @@ Contributions are welcome! Please open issues or pull requests.
 
 This project is currently still under development. It is not recommended to use it in a production environment. Things can and will change. This also applies to PocketBase
 
-
-
-> Built with 💘 for the PocketBase community. 
+> Built with 💘 for the PocketBase community.
 > Continued development of the original PocketBase C# SDK by PRCV1 - I can't thank you enough for your work! This project is tested with BrowserStack.
-
-
-
-
-
