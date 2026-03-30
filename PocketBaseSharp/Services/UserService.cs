@@ -88,7 +88,7 @@ namespace PocketBaseSharp.Services
             body.AddIfNotNull("passwordConfirm", passwordConfirm);
             body.AddIfNotNull("verified", verified);
 
-            string url = $"{BasePath()}/records/{UrlEncode(id)}";
+            string url = $"{BasePath()}/{UrlEncode(id)}";
             return _client.SendAsync<UserModel>(url, HttpMethod.Patch, body: body, cancellationToken: cancellationToken);
         }
 
@@ -118,7 +118,7 @@ namespace PocketBaseSharp.Services
             body.AddIfNotNull("passwordConfirm", passwordConfirm);
             body.AddIfNotNull("verified", verified);
 
-            string url = $"{BasePath()}/records/{UrlEncode(id)}";
+            string url = $"{BasePath()}/{UrlEncode(id)}";
             return _client.Send<UserModel>(url, HttpMethod.Patch, body: body, cancellationToken: cancellationToken);
         }
 

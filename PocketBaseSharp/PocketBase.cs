@@ -125,7 +125,7 @@ namespace PocketBaseSharp
                     var error = new ClientError(method, url.ToString(), (int)response.StatusCode);
                     return Result.Fail(error);
                 }
-                
+
                 return Result.Ok();
             }
             catch (Exception ex)
@@ -143,7 +143,7 @@ namespace PocketBaseSharp
         public Result Send(string path, HttpMethod method, IDictionary<string, string>? headers = null, IDictionary<string, object?>? query = null, IDictionary<string, object>? body = null, IEnumerable<IFile>? files = null, CancellationToken cancellationToken = default)
         {
             //RETURN RESULT
-            
+
             headers ??= new Dictionary<string, string>();
             query ??= new Dictionary<string, object?>();
             body ??= new Dictionary<string, object>();
@@ -215,7 +215,7 @@ namespace PocketBaseSharp
 #if DEBUG
                 var json = await response.Content.ReadAsStringAsync(cancellationToken);
 #endif
-                
+
                 if ((int)response.StatusCode >= 400)
                 {
                     ClientError error = new ClientError(method, url.ToString(), (int)response.StatusCode);
@@ -243,7 +243,7 @@ namespace PocketBaseSharp
                 return Result.Fail(new Error(ex.Message));
             }
         }
-        
+
         public Result<T> Send<T>(string path, HttpMethod method, IDictionary<string, string>? headers = null, IDictionary<string, object?>? query = null, IDictionary<string, object>? body = null, IEnumerable<IFile>? files = null, CancellationToken cancellationToken = default)
         {
             headers ??= new Dictionary<string, string>();
@@ -544,6 +544,11 @@ namespace PocketBaseSharp
             if (file is FilepathFile filePath)
             {
                 var fileName = Path.GetFileName(filePath.FilePath);
+                if (string.IsNullOrWhiteSpace(fileName))
+                {
+                    return MimeMapping.MimeUtility.UnknownMimeType;
+                }
+
                 return MimeMapping.MimeUtility.GetMimeMapping(fileName);
             }
             return MimeMapping.MimeUtility.UnknownMimeType;

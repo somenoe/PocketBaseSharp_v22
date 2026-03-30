@@ -25,7 +25,7 @@ namespace PocketBaseSharp.Services.Base
                 { "perPage", perPage },
                 { "sort", sort }
             };
-        
+
             return _client.Send<PagedCollectionModel<T>>(path, HttpMethod.Get, query: query, cancellationToken: cancellationToken);
         }
 
@@ -83,13 +83,13 @@ namespace PocketBaseSharp.Services.Base
             string url = $"{BasePath(_collectionName)}/{UrlEncode(id)}";
             return _client.Send<T>(url, HttpMethod.Get);
         }
-        
+
         public virtual Task<Result<T>> GetOneAsync<T>(string id)
         {
             string url = $"{BasePath(_collectionName)}/{UrlEncode(id)}";
             return _client.SendAsync<T>(url, HttpMethod.Get);
         }
-        
+
         public Task<Result<T>> CreateAsync<T>(T item, string? expand = null, IDictionary<string, string>? headers = null, IEnumerable<IFile>? files = null, CancellationToken cancellationToken = default) where T : BaseModel
         {
             var query = new Dictionary<string, object?>()
@@ -146,14 +146,7 @@ namespace PocketBaseSharp.Services.Base
                     ? $"{_collectionName}/{recordId}"
                     : _collectionName;
 
-            try
-            {
-                await _client.RealTime.SubscribeAsync(subscribeTo, callback);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            await _client.RealTime.SubscribeAsync(subscribeTo, callback);
         }
 
         /// <summary>
