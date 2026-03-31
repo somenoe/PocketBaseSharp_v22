@@ -1,0 +1,804 @@
+@page "/components"
+@inject DemoPocketBaseService Demo
+
+<PageTitle>Components</PageTitle>
+
+<Drawer Show="@isDrawerOpen" Position="@drawerPosition" OnClose="CloseDrawer">
+    <DrawerHeader>@DrawerHeading</DrawerHeader>
+    <DrawerItems>
+        <div class="space-y-5">
+            <Alert Color="AlertColor.Info"
+                   Icon="@(new InfoCircleIcon())"
+                   TextEmphasis="Live overlay"
+                   Text="The drawer preview is wired to the same local components used across the rest of the demo shell." />
+
+            <Sidebar Class="w-full rounded-[1.5rem] border border-white/10 bg-white/10 px-3 py-3 shadow-none">
+                <SidebarItemGroup>
+                    @foreach (var drawerLink in drawerLinks)
+                    {
+                        <SidebarItem Href="@drawerLink.Href" Icon="@drawerLink.Icon">
+                            @drawerLink.Label
+                        </SidebarItem>
+                    }
+                </SidebarItemGroup>
+
+                <SidebarCTA>
+                    <div class="space-y-3">
+                        <p class="text-sm text-slate-700 dark:text-slate-200">Use the preview drawer to verify the component behaves the same from either edge of the viewport.</p>
+                        <Button Color="ButtonColor.Primary" OnClick="CloseDrawer">Close preview</Button>
+                    </div>
+                </SidebarCTA>
+            </Sidebar>
+        </div>
+    </DrawerItems>
+</Drawer>
+
+<FeatureHero Title="Component Kitchen Sink"
+             Description="A long-form route that exercises every local UI primitive in the demo project. Enum-based variants are shown side by side, boolean switches get both states, and interactive components update live state on the page."
+             Eyebrow="Design system lab"
+             Service="Demo.Components"
+             Method="All local building blocks"
+             Access="Public route">
+    <div class="rounded-[1.5rem] border border-white/10 bg-[linear-gradient(160deg,rgba(2,6,23,0.94),rgba(15,23,42,0.84))] p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Coverage</p>
+                <p class="mt-2 font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold">All local demo components</p>
+            </div>
+
+            <Badge Color="@(Demo.IsAuthenticated ? BadgeColor.Success : BadgeColor.Gray)">@Demo.SessionKind</Badge>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-300">This page is intentionally long so each component has enough room for meaningful examples instead of a token single-state preview.</p>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+            <Badge Color="BadgeColor.Success">Interactive</Badge>
+            <Badge Color="BadgeColor.Info">Full-page test target</Badge>
+            <Badge Color="BadgeColor.Gray">@($"{iconSamples.Length} icons in UiTypes")</Badge>
+        </div>
+    </div>
+</FeatureHero>
+
+<StatusAlert Message="@interactionMessage" IsError="@isInteractionError" IsWarning="@isInteractionWarning" />
+
+<Toolbar Embedded="true"
+         Class="rounded-[1.5rem] border border-white/50 bg-white/80 px-5 py-4 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+    <ChildContent>
+        <div class="flex flex-wrap items-center gap-2">
+            <Button Color="ButtonColor.Primary" OnClick="OpenLeftDrawer">Open left drawer</Button>
+            <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Dark" OnClick="OpenRightDrawer">Open right drawer</Button>
+            <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" OnClick="ResetShowcase">Reset demo state</Button>
+        </div>
+    </ChildContent>
+    <End>
+        <div class="flex flex-wrap items-center gap-2">
+            <Badge Color="@selectedBadgeColor">Palette: @selectedBadgeColor</Badge>
+            <Badge Color="BadgeColor.Gray">Drawer: @(isDrawerOpen ? drawerPosition.ToString() : "Closed")</Badge>
+        </div>
+    </End>
+</Toolbar>
+
+<section id="cards" class="space-y-4">
+    <div>
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Card</p>
+        <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold text-slate-900 dark:text-white">Jump cards and static panels</h2>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">The card component supports static and linked surfaces. These jump cards double as a table of contents for the rest of the page.</p>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        @foreach (var quickLink in quickLinks)
+        {
+            <Card Href="@quickLink.Href"
+                  Class="min-w-0 rounded-[1.5rem] border border-slate-300/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.76)),linear-gradient(135deg,rgba(251,146,60,0.08),rgba(56,189,248,0.04))] p-5 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.3)] transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(15,23,42,0.74)),linear-gradient(135deg,rgba(251,146,60,0.1),rgba(56,189,248,0.06))] dark:shadow-[0_24px_60px_-40px_rgba(0,0,0,0.35)]">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Quick jump</p>
+                        <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">@quickLink.Title</h3>
+                    </div>
+
+                    <IconRenderer Icon="@quickLink.Icon" Class="h-5 w-5 text-orange-500 dark:text-orange-300" />
+                </div>
+
+                <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">@quickLink.Copy</p>
+            </Card>
+        }
+    </div>
+
+    <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Static surface</p>
+        <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">Cards can frame content without acting like navigation</h3>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">This static example is here purely to show the non-linked mode next to the linked jump cards above.</p>
+    </Card>
+</section>
+
+<section id="feedback" class="space-y-4">
+    <div>
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Feedback</p>
+        <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold text-slate-900 dark:text-white">Alerts, badges, avatars, and state summaries</h2>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">These are the small identity and feedback surfaces that appear throughout the rest of the demo pages.</p>
+    </div>
+
+    <div class="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Alert + StatusAlert</p>
+            <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">Color variants and wrapper states</h3>
+
+            <div class="mt-5 space-y-3">
+                <Alert Color="AlertColor.Info" Icon="@(new InfoCircleIcon())" TextEmphasis="Info" Text="Use informational alerts for neutral guidance and runbook steps." />
+
+                <Alert Color="AlertColor.Warning" Icon="@(new ExclamationTriangleIcon())" TextEmphasis="Warning" Text="Warnings keep the user moving while calling out that a choice deserves attention." WithBorderAccent="true" />
+
+                <Alert Color="AlertColor.Success" Icon="@(new CheckCircleIcon())" TextEmphasis="Success" Text="Success alerts work well for completed requests and durable state changes." />
+
+                <Alert Color="AlertColor.Failure"
+                       Icon="@(new ExclamationTriangleIcon())"
+                       TextEmphasis="Failure"
+                       Text="Failure alerts can carry extra content via ChildContent."
+                       WithBorderAccent="true">
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <Badge Color="BadgeColor.Pink">Escalate</Badge>
+                        <Badge Color="BadgeColor.Gray">Retry available</Badge>
+                    </div>
+                </Alert>
+            </div>
+
+            <div class="mt-6 space-y-3">
+                <StatusAlert Message="StatusAlert defaults to a success treatment when no error flags are set." />
+                <StatusAlert Message="Warnings flip the wrapper to amber while keeping the component API compact." IsWarning="true" />
+                <StatusAlert Message="Errors map to the failure palette and the triangle icon." IsError="true" />
+            </div>
+        </Card>
+
+        <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Badge + Avatar</p>
+            <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">Palette chips and identity treatments</h3>
+
+            <div class="mt-5 flex flex-wrap gap-2">
+                @foreach (var badgeColor in badgeColors)
+                {
+                    <Badge Color="@badgeColor">@badgeColor</Badge>
+                }
+            </div>
+
+            <div class="mt-5 flex flex-wrap gap-2">
+                @foreach (var badgeColor in badgeColors)
+                {
+                    <Button Size="ButtonSize.Small"
+                            Variant="ButtonVariant.Outline"
+                            Color="@(badgeColor == selectedBadgeColor ? ButtonColor.Primary : ButtonColor.Gray)"
+                            OnClick="@(() => SelectBadgeColor(badgeColor))">
+                        @badgeColor
+                    </Button>
+                }
+            </div>
+
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                <div class="rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Default avatar</p>
+                    <div class="mt-4 flex items-center gap-3">
+                        <Avatar Image="favicon.svg" Alt="PocketBaseSharp mark" />
+                        <div>
+                            <p class="font-semibold text-slate-900 dark:text-white">Rounded-2xl surface</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300">Useful when the image should read like an app tile.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Rounded avatar</p>
+                    <div class="mt-4 flex items-center gap-3">
+                        <Avatar Rounded="true" Image="favicon.svg" Alt="PocketBaseSharp mark" />
+                        <div>
+                            <p class="font-semibold text-slate-900 dark:text-white">Circular identity</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300">Use the Rounded flag when the asset should behave like a profile marker.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Card>
+    </div>
+</section>
+
+<section id="inputs" class="space-y-4">
+    <div>
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Inputs</p>
+        <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold text-slate-900 dark:text-white">Buttons, labels, text inputs, and toggles</h2>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">This section covers the primary interactive entry points used across the sample application.</p>
+    </div>
+
+    <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Button</p>
+        <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">Color, variant, size, loading, disabled, and link states</h3>
+
+        <div class="mt-5 grid gap-6 xl:grid-cols-2">
+            <div class="space-y-4">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Default variant</p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        @foreach (var buttonColor in buttonColors)
+                        {
+                            <Button Color="@buttonColor" OnClick="@(() => Announce($"Pressed a {buttonColor} default button."))">
+                                @buttonColor
+                            </Button>
+                        }
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Outline variant</p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        @foreach (var buttonColor in buttonColors)
+                        {
+                            <Button Variant="ButtonVariant.Outline" Color="@buttonColor" OnClick="@(() => Announce($"Pressed a {buttonColor} outline button."))">
+                                @buttonColor
+                            </Button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Size and state combinations</p>
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <Button Size="ButtonSize.Small" Color="ButtonColor.Primary" OnClick="@(() => Announce("Pressed a small action button."))">Small action</Button>
+                    <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Disabled="true">Disabled</Button>
+                    <Button Color="ButtonColor.Dark" Loading="true">Loading</Button>
+                    <Button Href="/health" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray">Href link</Button>
+                    <Button Color="ButtonColor.Red" OnClick="@(() => Announce("Triggered the high-emphasis action state.", warning: true))">
+                        <RocketIcon class="h-4 w-4" />
+                        <span>Trigger notice</span>
+                    </Button>
+                </div>
+            </div>
+        </div>
+    </Card>
+
+    <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Label + TextInput + ToggleSwitch</p>
+        <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">Bound values, on-change vs on-input, icons, disabled mode, and toggle states</h3>
+
+        <div class="mt-5 grid gap-5 xl:grid-cols-3">
+            <div>
+                <div class="mb-2 block">
+                    <Label For="kitchen-email" Value="OnChange input" />
+                </div>
+                <TextInput TValue="string" Id="kitchen-email" @bind-Value="onChangeValue" Type="email" Placeholder="admin@admin.com" />
+                <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Committed value: @onChangeValue</p>
+            </div>
+
+            <div>
+                <div class="mb-2 block">
+                    <Label For="kitchen-search">
+                        <span class="inline-flex items-center gap-2">
+                            <SearchIcon class="h-4 w-4" />
+                            <span>OnInput search</span>
+                        </span>
+                    </Label>
+                </div>
+                <TextInput TValue="string"
+                           Id="kitchen-search"
+                           @bind-Value="onInputValue"
+                           Behavior="InputBehavior.OnInput"
+                           DebounceDelay="200"
+                           Placeholder="Search the component catalog"
+                           Icon="@(new SearchIcon())" />
+                <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Live value: @onInputValue</p>
+            </div>
+
+            <div>
+                <div class="mb-2 block">
+                    <Label For="kitchen-password" Value="Disabled password input" />
+                </div>
+                <TextInput TValue="string"
+                           Id="kitchen-password"
+                           @bind-Value="disabledPasswordValue"
+                           Type="password"
+                           Disabled="true"
+                           Placeholder="Disabled preview" />
+                <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Disabled fields inherit the same visual treatment with reduced emphasis.</p>
+            </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap items-center gap-6">
+            <ToggleSwitch @bind-Checked="primaryToggle" Label="Primary toggle" />
+            <ToggleSwitch @bind-Checked="secondaryToggle" Label="Secondary toggle" />
+            <Badge Color="@(primaryToggle ? BadgeColor.Success : BadgeColor.Warning)">Primary: @(primaryToggle ? "On" : "Off")</Badge>
+            <Badge Color="@(secondaryToggle ? BadgeColor.Info : BadgeColor.Gray)">Secondary: @(secondaryToggle ? "On" : "Off")</Badge>
+        </div>
+    </Card>
+</section>
+
+<section id="navigation" class="space-y-4">
+    <div>
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Navigation</p>
+        <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold text-slate-900 dark:text-white">Breadcrumbs, navbars, sidebars, toolbars, tooltips, and dropdowns</h2>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">These examples mirror the shell patterns already used by the rest of the demo application.</p>
+    </div>
+
+    <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+        <div class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+            <div class="space-y-6">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Breadcrumb + BreadcrumbItem</p>
+                    <Breadcrumb>
+                        <BreadcrumbItem Href="/">
+                            <span class="inline-flex items-center gap-2 leading-none">
+                                <HomeIcon class="h-4 w-4" />
+                                <span>Home</span>
+                            </span>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem Href="/components">
+                            <span class="leading-none">Components</span>
+                        </BreadcrumbItem>
+                        <BreadcrumbItem>
+                            <span class="leading-none">Kitchen sink</span>
+                        </BreadcrumbItem>
+                    </Breadcrumb>
+                </div>
+
+                <div>
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Toolbar</p>
+                    <Toolbar Class="rounded-[1.25rem] border border-white/40 bg-white/55 px-4 py-3 dark:border-white/10 dark:bg-slate-950/45">
+                        <ChildContent>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <Button Size="ButtonSize.Small" Color="ButtonColor.Primary" OnClick="@(() => Announce("Toolbar primary action fired."))">Primary action</Button>
+                                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Href="/records">Open records</Button>
+                            </div>
+                        </ChildContent>
+                        <End>
+                            <Badge Color="BadgeColor.Info">Standalone toolbar</Badge>
+                        </End>
+                    </Toolbar>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Navbar + NavbarBrand</p>
+                <Navbar Class="rounded-[1.5rem] border border-white/50 bg-white/85 px-4 py-4 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)] backdrop-blur dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_24px_90px_-36px_rgba(0,0,0,0.9)]">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <NavbarBrand Href="/components">
+                            <div class="flex items-center gap-4">
+                                <div class="grid h-11 w-11 place-items-center rounded-2xl bg-[linear-gradient(135deg,#ea580c,#f59e0b_56%,#14b8a6)] font-['Space_Grotesk','Segoe_UI',sans-serif] text-sm font-bold tracking-[0.18em] text-white shadow-[0_20px_40px_-24px_rgba(194,65,12,0.75)]">UI</div>
+                                <div>
+                                    <div class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Kitchen sink</div>
+                                    <div class="text-xs uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Local component catalog</div>
+                                </div>
+                            </div>
+                        </NavbarBrand>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <Badge Color="BadgeColor.Gray">Public route</Badge>
+                            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Href="#icons">Jump to icons</Button>
+                            <Button Size="ButtonSize.Small" Color="ButtonColor.Primary" OnClick="@(() => Announce("Navbar action triggered."))">Preview action</Button>
+                        </div>
+                    </div>
+                </Navbar>
+            </div>
+        </div>
+    </Card>
+
+    <div class="grid gap-6 xl:grid-cols-[0.88fr_1.12fr]">
+        <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Sidebar + SidebarItemGroup + SidebarItem + SidebarCTA</p>
+            <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">Section index</h3>
+
+            <Sidebar Class="mt-5 w-full rounded-[1.5rem] border border-slate-300/30 bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-slate-950/55">
+                <SidebarItemGroup>
+                    @foreach (var quickLink in sidebarLinks)
+                    {
+                        <SidebarItem Href="@quickLink.Href" Icon="@quickLink.Icon">
+                            @quickLink.Label
+                        </SidebarItem>
+                    }
+                </SidebarItemGroup>
+
+                <SidebarCTA>
+                    <div class="space-y-3">
+                        <p class="text-sm text-slate-700 dark:text-slate-300">The CTA slot is useful when the nav also needs a high-signal recommendation.</p>
+                        <Button Href="#storytelling" Color="ButtonColor.Primary" Class="w-full">Open result cards</Button>
+                    </div>
+                </SidebarCTA>
+            </Sidebar>
+        </Card>
+
+        <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Tooltip + Dropdown + Drawer</p>
+            <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">Overlay and menu patterns</h3>
+
+            <div class="mt-5 flex flex-wrap gap-2">
+                @foreach (var placement in tooltipPlacements)
+                {
+                    <Tooltip Content="@($"Tooltip placement: {placement}")" Placement="@placement">
+                        <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray">@placement</Button>
+                    </Tooltip>
+                }
+            </div>
+
+            <div class="mt-6 flex flex-wrap items-start gap-4">
+                <Dropdown Inline="true" Placement="DropdownPlacement.Bottom" MenuClass="w-72">
+                    <CustomTrigger>
+                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray">
+                            <span>Button trigger menu</span>
+                        </Button>
+                    </CustomTrigger>
+
+                    <ChildContent>
+                        <DropdownHeader>
+                            <span class="block text-sm font-semibold text-slate-900 dark:text-white">Menu preview</span>
+                            <span class="block text-sm text-slate-500 dark:text-slate-400">Header, items, and divider in one dropdown.</span>
+                        </DropdownHeader>
+                        <DropdownItem Icon="@(new HomeIcon())" Href="/">Back to overview</DropdownItem>
+                        <DropdownItem Icon="@(new FileIcon())" OnClick="@(() => Announce("Dropdown button item selected."))">Notify selection</DropdownItem>
+                        <DropdownDivider />
+                        <DropdownItem Icon="@(new GearIcon())" OnClick="@(() => Announce("Opened drawer preview from dropdown.", warning: true))">Open drawer from menu</DropdownItem>
+                    </ChildContent>
+                </Dropdown>
+
+                <Dropdown Inline="true" Placement="DropdownPlacement.Bottom" MenuClass="w-72">
+                    <CustomTrigger>
+                        <div class="flex items-center gap-3 rounded-full border border-slate-300/40 bg-white/75 px-4 py-1.5 shadow-[0_18px_44px_-32px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-slate-950/75">
+                            <div class="min-w-0 text-right">
+                                <div class="text-sm font-semibold text-slate-900 dark:text-white">Profile trigger</div>
+                                <div class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">CustomTrigger slot</div>
+                            </div>
+                            <Avatar Rounded="true" Image="favicon.svg" Alt="PocketBaseSharp mark" />
+                        </div>
+                    </CustomTrigger>
+
+                    <ChildContent>
+                        <DropdownHeader>
+                            <span class="block text-sm">PocketBaseSharp Demo</span>
+                            <span class="block truncate text-sm font-medium text-slate-500 dark:text-slate-400">Current session: @Demo.SessionKind</span>
+                        </DropdownHeader>
+                        <DropdownItem Icon="@(new SearchIcon())" Href="#icons">Jump to icon gallery</DropdownItem>
+                        <DropdownDivider />
+                        <DropdownItem Icon="@(new ArrowRightToBracketIcon())" OnClick="@(() => Announce("Profile menu action fired."))">Send interaction message</DropdownItem>
+                    </ChildContent>
+                </Dropdown>
+            </div>
+
+            <div class="mt-6 flex flex-wrap gap-2">
+                <Button Color="ButtonColor.Primary" OnClick="OpenLeftDrawer">Open left drawer</Button>
+                <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Dark" OnClick="OpenRightDrawer">Open right drawer</Button>
+            </div>
+        </Card>
+    </div>
+</section>
+
+<section id="storytelling" class="space-y-4">
+    <div>
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Storytelling</p>
+        <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold text-slate-900 dark:text-white">Feature hero and result inspector</h2>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">The page header already demonstrates FeatureHero with child content. This section adds a minimal hero plus empty and populated ResultCard states.</p>
+    </div>
+
+    <FeatureHero Title="Minimal FeatureHero"
+                 Description="This second hero intentionally omits ChildContent so you can see the leaner content-only presentation."
+                 Eyebrow="FeatureHero"
+                 Service="Page storytelling"
+                 Method="Title + description + badges"
+                 Access="No side panel" />
+
+    <div class="grid gap-6 xl:grid-cols-2">
+        <ResultCard Title="Live component state"
+                    Description="A populated inspector showing the current state of the kitchen sink controls."
+                    Json="@BuildShowcaseJson()"
+                    EmptyMessage="This card is intentionally populated on every render." />
+
+        <ResultCard Title="Empty state"
+                    Description="The empty mode renders the dashed placeholder panel and helper copy."
+                    EmptyMessage="Leave Json unset when you want the empty-state treatment." />
+    </div>
+</section>
+
+<section id="tabs-data" class="space-y-4">
+    <div>
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Tabs and data</p>
+        <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold text-slate-900 dark:text-white">Tabs, panels, and table combinations</h2>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Tabs are shown in both supported variants, and tables cover the plain, striped, hoverable, and combined states.</p>
+    </div>
+
+    <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+        <div class="grid gap-6 xl:grid-cols-2">
+            <div>
+                <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Tabs default</p>
+                <Tabs>
+                    <TabListContent>
+                        <Tab Index="0" Icon="@(new RocketIcon())">Overview</Tab>
+                        <Tab Index="1" Icon="@(new GearIcon())">Options</Tab>
+                        <Tab Index="2" Icon="@(new InfoCircleIcon())">Notes</Tab>
+                    </TabListContent>
+                    <TabPanelsContent>
+                        <TabPanel Index="0">
+                            <Card Class="mt-4 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="text-sm text-slate-600 dark:text-slate-300">Default tabs behave like lightweight segmented navigation.</p>
+                            </Card>
+                        </TabPanel>
+                        <TabPanel Index="1">
+                            <Card Class="mt-4 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="text-sm text-slate-600 dark:text-slate-300">The selected index is owned internally by the Tabs component.</p>
+                            </Card>
+                        </TabPanel>
+                        <TabPanel Index="2">
+                            <Card Class="mt-4 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="text-sm text-slate-600 dark:text-slate-300">TabListContent and TabPanelsContent are simple layout wrappers around the active state.</p>
+                            </Card>
+                        </TabPanel>
+                    </TabPanelsContent>
+                </Tabs>
+            </div>
+
+            <div>
+                <p class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Tabs pills</p>
+                <Tabs Variant="TabVariant.Pills">
+                    <TabListContent>
+                        <Tab Index="0" Icon="@(new HomeIcon())">Public</Tab>
+                        <Tab Index="1" Icon="@(new UserIcon())">Auth</Tab>
+                        <Tab Index="2" Icon="@(new DatabaseIcon())">Admin</Tab>
+                    </TabListContent>
+                    <TabPanelsContent>
+                        <TabPanel Index="0">
+                            <Card Class="mt-4 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="text-sm text-slate-600 dark:text-slate-300">Pills are better when the tabs need stronger visual separation from the rest of the page.</p>
+                            </Card>
+                        </TabPanel>
+                        <TabPanel Index="1">
+                            <Card Class="mt-4 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="text-sm text-slate-600 dark:text-slate-300">This mirrors the tab treatment already used on the overview page.</p>
+                            </Card>
+                        </TabPanel>
+                        <TabPanel Index="2">
+                            <Card Class="mt-4 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="text-sm text-slate-600 dark:text-slate-300">TabPanel only renders content for the active index, which keeps the markup straightforward.</p>
+                            </Card>
+                        </TabPanel>
+                    </TabPanelsContent>
+                </Tabs>
+            </div>
+        </div>
+    </Card>
+
+    <div class="grid gap-6 xl:grid-cols-2">
+        @foreach (var tableMode in tableModes)
+        {
+            <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Table family</p>
+                        <h3 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">@tableMode.Title</h3>
+                    </div>
+
+                    <Badge Color="BadgeColor.Gray">@tableMode.Badge</Badge>
+                </div>
+
+                <div class="mt-5 overflow-x-auto">
+                    <Table Striped="@tableMode.Striped" Hoverable="@tableMode.Hoverable">
+                        <TableHead>
+                            <TableRow>
+                                <TableHeadCell>Component</TableHeadCell>
+                                <TableHeadCell>Purpose</TableHeadCell>
+                                <TableHeadCell>Status</TableHeadCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody Class="divide-y">
+                            @foreach (var componentRow in tableRows)
+                            {
+                                <TableRow>
+                                    <TableCell>@componentRow.Name</TableCell>
+                                    <TableCell>@componentRow.Purpose</TableCell>
+                                    <TableCell>
+                                        <Badge Color="@componentRow.Color">@componentRow.Status</Badge>
+                                    </TableCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+            </Card>
+        }
+    </div>
+</section>
+
+<section id="icons" class="space-y-4">
+    <div>
+        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">IconRenderer + UiTypes</p>
+        <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold text-slate-900 dark:text-white">All icon types defined in UiTypes.cs</h2>
+        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Each icon in the local icon set is rendered through IconRenderer so the showcase covers both the icon classes and the renderer component.</p>
+    </div>
+
+    <Card Class="rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            @foreach (var iconSample in iconSamples)
+            {
+                <div class="rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                    <div class="flex items-center gap-3">
+                        <div class="grid h-11 w-11 place-items-center rounded-2xl bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-200">
+                            <IconRenderer Icon="@iconSample.Icon" Class="h-5 w-5" />
+                        </div>
+                        <div>
+                            <p class="font-semibold text-slate-900 dark:text-white">@iconSample.Label</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300">UiTypes icon</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </Card>
+</section>
+
+@code {
+    private static readonly BadgeColor[] badgeColors =
+    [
+        BadgeColor.Gray,
+        BadgeColor.Primary,
+        BadgeColor.Info,
+        BadgeColor.Success,
+        BadgeColor.Warning,
+        BadgeColor.Pink,
+    ];
+
+    private static readonly ButtonColor[] buttonColors =
+    [
+        ButtonColor.Primary,
+        ButtonColor.Gray,
+        ButtonColor.Dark,
+        ButtonColor.Red,
+    ];
+
+    private static readonly TooltipPlacement[] tooltipPlacements =
+    [
+        TooltipPlacement.Top,
+        TooltipPlacement.Right,
+        TooltipPlacement.Bottom,
+        TooltipPlacement.Left,
+    ];
+
+    private static readonly QuickLink[] quickLinks =
+    [
+        new("Feedback", "Alerts, badges, avatars, and status wrappers.", "#feedback", new InfoCircleIcon()),
+        new("Inputs", "Buttons, labels, text inputs, and toggles.", "#inputs", new SearchIcon()),
+        new("Navigation", "Breadcrumbs, navbars, sidebars, tooltips, and menus.", "#navigation", new HomeIcon()),
+        new("Icons", "Every icon declared in UiTypes.cs.", "#icons", new GridIcon()),
+    ];
+
+    private static readonly SidebarLink[] sidebarLinks =
+    [
+        new("Feedback", "#feedback", new InfoCircleIcon()),
+        new("Inputs", "#inputs", new SearchIcon()),
+        new("Navigation", "#navigation", new HomeIcon()),
+        new("Storytelling", "#storytelling", new ClipboardArrowIcon()),
+        new("Tabs + data", "#tabs-data", new DatabaseIcon()),
+        new("Icons", "#icons", new GridIcon()),
+    ];
+
+    private static readonly SidebarLink[] drawerLinks =
+    [
+        new("Overview", "/", new HomeIcon()),
+        new("Health", "/health", new HeartIcon()),
+        new("Records", "/records", new FileIcon()),
+        new("Icon gallery", "/components#icons", new GridIcon()),
+    ];
+
+    private static readonly TableMode[] tableModes =
+    [
+        new("Plain table", "Base", Striped: false, Hoverable: false),
+        new("Striped table", "Striped", Striped: true, Hoverable: false),
+        new("Hoverable table", "Hoverable", Striped: false, Hoverable: true),
+        new("Striped + hoverable table", "Combined", Striped: true, Hoverable: true),
+    ];
+
+    private static readonly TableRowSample[] tableRows =
+    [
+        new("Button", "Primary action surface", "Interactive", BadgeColor.Success),
+        new("Dropdown", "Compact menu for actions", "Overlay", BadgeColor.Info),
+        new("ResultCard", "JSON and empty-state inspector", "Diagnostic", BadgeColor.Warning),
+    ];
+
+    private static readonly IconSample[] iconSamples =
+    [
+        new("BarsIcon", new BarsIcon()),
+        new("HomeIcon", new HomeIcon()),
+        new("UserIcon", new UserIcon()),
+        new("HeartIcon", new HeartIcon()),
+        new("GearIcon", new GearIcon()),
+        new("ArrowRightToBracketIcon", new ArrowRightToBracketIcon()),
+        new("FileIcon", new FileIcon()),
+        new("UsersIcon", new UsersIcon()),
+        new("GridIcon", new GridIcon()),
+        new("DatabaseIcon", new DatabaseIcon()),
+        new("BellIcon", new BellIcon()),
+        new("ExclamationTriangleIcon", new ExclamationTriangleIcon()),
+        new("InfoCircleIcon", new InfoCircleIcon()),
+        new("CheckCircleIcon", new CheckCircleIcon()),
+        new("ClipboardArrowIcon", new ClipboardArrowIcon()),
+        new("RocketIcon", new RocketIcon()),
+        new("LockIcon", new LockIcon()),
+        new("SearchIcon", new SearchIcon()),
+    ];
+
+    private BadgeColor selectedBadgeColor = BadgeColor.Primary;
+    private string onChangeValue = "admin@admin.com";
+    private string onInputValue = "component catalog";
+    private string disabledPasswordValue = "demo123456";
+    private bool primaryToggle = true;
+    private bool secondaryToggle;
+    private bool isDrawerOpen;
+    private DrawerPosition drawerPosition = DrawerPosition.Left;
+    private string interactionMessage = "Use the controls on this page to verify the local components in real time.";
+    private bool isInteractionError;
+    private bool isInteractionWarning;
+
+    private string DrawerHeading => drawerPosition == DrawerPosition.Left
+        ? "Left drawer preview"
+        : "Right drawer preview";
+
+    private void OpenLeftDrawer()
+    {
+        OpenDrawer(DrawerPosition.Left);
+    }
+
+    private void OpenRightDrawer()
+    {
+        OpenDrawer(DrawerPosition.Right);
+    }
+
+    private void OpenDrawer(DrawerPosition position)
+    {
+        drawerPosition = position;
+        isDrawerOpen = true;
+        Announce($"Opened the {position.ToString().ToLowerInvariant()} drawer preview.", warning: true);
+    }
+
+    private void CloseDrawer()
+    {
+        isDrawerOpen = false;
+        Announce("Closed the drawer preview.");
+    }
+
+    private void ResetShowcase()
+    {
+        selectedBadgeColor = BadgeColor.Primary;
+        onChangeValue = "admin@admin.com";
+        onInputValue = "component catalog";
+        disabledPasswordValue = "demo123456";
+        primaryToggle = true;
+        secondaryToggle = false;
+        isDrawerOpen = false;
+        drawerPosition = DrawerPosition.Left;
+        Announce("Reset the kitchen-sink page back to its default state.");
+    }
+
+    private void SelectBadgeColor(BadgeColor color)
+    {
+        selectedBadgeColor = color;
+        Announce($"Selected the {color} badge palette.");
+    }
+
+    private void Announce(string message, bool warning = false, bool error = false)
+    {
+        interactionMessage = message;
+        isInteractionWarning = warning && !error;
+        isInteractionError = error;
+    }
+
+    private string BuildShowcaseJson()
+    {
+        return Demo.ToJson(new
+        {
+            Demo.SessionKind,
+            SelectedBadgeColor = selectedBadgeColor.ToString(),
+            OnChangeValue = onChangeValue,
+            OnInputValue = onInputValue,
+            PrimaryToggle = primaryToggle,
+            SecondaryToggle = secondaryToggle,
+            Drawer = isDrawerOpen ? drawerPosition.ToString() : "Closed",
+            LastInteraction = interactionMessage,
+        });
+    }
+
+    private sealed record QuickLink(string Title, string Copy, string Href, IconBase Icon);
+    private sealed record SidebarLink(string Label, string Href, IconBase Icon);
+    private sealed record TableMode(string Title, string Badge, bool Striped, bool Hoverable);
+    private sealed record TableRowSample(string Name, string Purpose, string Status, BadgeColor Color);
+    private sealed record IconSample(string Label, IconBase Icon);
+}

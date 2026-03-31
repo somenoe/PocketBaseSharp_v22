@@ -27,6 +27,7 @@ This project is a Blazor WebAssembly demo for the local PocketBase SDK workspace
 
 - `/health`: `HealthService`
 - `/auth`: user auth methods, user login, legacy admin bootstrap, `AuthStore`
+- `/components`: kitchen-sink showcase for all local demo components and icons
 - `/records`: `RecordService` over the public `entry` collection
 - `/users`: `UserService` admin CRUD wrappers
 - `/collections`: `CollectionService`

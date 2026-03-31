@@ -404,6 +404,9 @@
   .block {
     display: block;
   }
+  .contents {
+    display: contents;
+  }
   .flex {
     display: flex;
   }
@@ -589,6 +592,9 @@
   }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
+  }
+  .gap-5 {
+    gap: calc(var(--spacing) * 5);
   }
   .gap-6 {
     gap: calc(var(--spacing) * 6);
@@ -1233,6 +1239,9 @@
   .text-orange-200 {
     color: var(--color-orange-200);
   }
+  .text-orange-500 {
+    color: var(--color-orange-500);
+  }
   .text-orange-600 {
     color: var(--color-orange-600);
   }
@@ -1390,6 +1399,10 @@
     @supports (color: color-mix(in lab, red, red)) {
       --tw-ring-color: color-mix(in oklab, var(--color-slate-300) 50%, transparent);
     }
+  }
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
   }
   .blur-\[60px\] {
     --tw-blur: blur(60px);
@@ -1724,6 +1737,21 @@
       display: none;
     }
   }
+  .xl\:grid-cols-2 {
+    @media (width >= 80rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .xl\:grid-cols-3 {
+    @media (width >= 80rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .xl\:grid-cols-4 {
+    @media (width >= 80rem) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
   .xl\:grid-cols-\[0\.9fr_1\.1fr\] {
     @media (width >= 80rem) {
       grid-template-columns: 0.9fr 1.1fr;
@@ -1734,6 +1762,11 @@
       grid-template-columns: 0.85fr 1.15fr;
     }
   }
+  .xl\:grid-cols-\[0\.88fr_1\.12fr\] {
+    @media (width >= 80rem) {
+      grid-template-columns: 0.88fr 1.12fr;
+    }
+  }
   .xl\:grid-cols-\[0\.92fr_1\.08fr\] {
     @media (width >= 80rem) {
       grid-template-columns: 0.92fr 1.08fr;
@@ -1742,6 +1775,11 @@
   .xl\:grid-cols-\[0\.95fr_1\.05fr\] {
     @media (width >= 80rem) {
       grid-template-columns: 0.95fr 1.05fr;
+    }
+  }
+  .xl\:grid-cols-\[1\.05fr_0\.95fr\] {
+    @media (width >= 80rem) {
+      grid-template-columns: 1.05fr 0.95fr;
     }
   }
   .xl\:grid-cols-\[20rem_minmax\(0\,1fr\)\] {
@@ -2471,6 +2509,11 @@ main h1[tabindex="-1"]:focus {
   inherits: false;
   initial-value: 0 0 #0000;
 }
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
 @property --tw-blur {
   syntax: "*";
   inherits: false;
@@ -2597,6 +2640,7 @@ main h1[tabindex="-1"]:focus {
       --tw-ring-offset-width: 0px;
       --tw-ring-offset-color: #fff;
       --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-outline-style: solid;
       --tw-blur: initial;
       --tw-brightness: initial;
       --tw-contrast: initial;

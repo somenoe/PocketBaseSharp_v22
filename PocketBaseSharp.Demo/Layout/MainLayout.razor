@@ -168,6 +168,8 @@
                                                                                  Class="w-full rounded-[1.25rem] border border-white/40 bg-white/55 px-4 py-3 dark:border-white/10 dark:bg-slate-950/45">
                                                                             <ChildContent>
                                                                                 <div class="flex flex-wrap items-center gap-2">
+                                                                                    <Button Href="/components" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
+                                                                                            Size="ButtonSize.Small">UI kit</Button>
                                                                                     <Button Href="/auth" Color="ButtonColor.Primary" Size="ButtonSize.Small">Auth
                                                                                         hub</Button>
                                                                                         <Button Href="/health" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
@@ -360,6 +362,7 @@
     private readonly NavigationItem[] navigationItems =
     [
         new("Overview", "/", new HomeIcon(), "Use the overview as the fastest way to scan the SDK surfaces, the current client state, and the local test target.", "Mixed public + admin"),
+        new("Components", "/components", new ClipboardArrowIcon(), "Open the kitchen-sink route to review every local UI primitive, state variant, and icon in one place.", "Public"),
         new("Health", "/health", new HeartIcon(), "Smoke-test the bundled PocketBase instance and verify the SDK can reach the local API before moving deeper.", "Public"),
         new("Auth", "/auth", new UserIcon(), "Bootstrap admin auth, inspect collection auth methods, and see how AuthStore changes after each sign-in flow.", "Public + admin"),
         new("Records", "/records", new FileIcon(), "Create, update, list, and delete public entry records while watching each request surface in the shell.", "Public"),

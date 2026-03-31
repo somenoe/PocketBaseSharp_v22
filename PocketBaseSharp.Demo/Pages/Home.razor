@@ -228,6 +228,7 @@
         new("Health", "/health", "Ping the local server with HealthService.CheckHealthAsync().", "HealthService", "Public",
 "Diagnostics", "CheckHealthAsync()"),
         new("Auth", "/auth", "Load auth methods, sign in as admin, create a user, and inspect AuthStore.", "UserService + AuthStore", "Public + admin", "Identity", "AuthenticateWithPasswordAsync()"),
+        new("Components", "/components", "Browse the kitchen-sink page that showcases every local demo component and icon in one long-form route.", "Demo.Components", "Public", "UI", "Local component library"),
         new("Records", "/records", "Create, list, edit, and delete entry records with RecordService.", "RecordService",
 "Public", "CRUD", "ListAsync(), CreateAsync()"),
         new("Users", "/users", "Create and patch auth records using the user service wrappers.", "UserService", "Admin", "Admin tools", "ListAsync(), UpdateAsync()"),
@@ -244,11 +245,11 @@
     [
         new(1, "Confirm the local server", "Kick off with the health page so you know the SDK can reach the bundled PocketBase instance before testing richer flows.", "/health", "Run health checks"),
         new(2, "Load credentials when needed", "The auth workspace handles both collection auth and the legacy admin bootstrap path required for the bundled local server.", "/auth", "Open auth workspace"),
-        new(3, "Exercise one service at a time", "Jump to records, users, collections, backups, or realtime and inspect the payloads without leaving the browser.", "/records", "Open service pages"),
+        new(3, "Exercise one surface at a time", "Jump to the component kitchen sink or the service pages and inspect payloads, UI states, and request flow without leaving the browser.", "/components", "Open showcase pages"),
     ];
     private readonly ServiceCluster[] serviceClusters =
     [
-        new("Public routes", "No sign-in required. Use these pages for fast connectivity checks and collection CRUD against the open demo data.", ["Health", "Records", "Realtime"], BadgeColor.Success),
+        new("Public routes", "No sign-in required. Use these pages for fast connectivity checks, UI review, and collection CRUD against the open demo data.", ["Health", "Components", "Records", "Realtime"], BadgeColor.Success),
         new("Identity flows", "These pages explain how AuthStore changes after user sign-in, admin bootstrap, refresh, and logout operations.", ["Auth", "Users"], BadgeColor.Info),
         new("Admin diagnostics", "Schema, settings, and backup flows sit behind admin auth and are useful once the token is loaded.", ["Collections", "Settings", "Backups"], BadgeColor.Warning),
     ];
