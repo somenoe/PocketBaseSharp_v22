@@ -9,128 +9,139 @@
              Access="Admin required">
     <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
         <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Admin session</p>
-        <p class="mt-2 font-display text-2xl font-semibold">@(Demo.IsAdminSession ? "Unlocked" : "Locked")</p>
-        <p class="mt-3 text-sm text-slate-300">Admin bootstrap is handled on the auth page through the legacy superuser
-            endpoint, then the SDK reuses that JWT for the user service calls here.</p>
-        </div>
-    </FeatureHero>
-
-    @if (!Demo.IsAdminSession)
-    {
-        <StatusAlert Message="Open Auth and sign in as the bundled admin before using the user management wrappers."
-                     IsWarning="true" />
-        <Card Class="panel-surface p-5">
-            <Button Href="/auth" Color="ButtonColor.Primary">Go to auth</Button>
-        </Card>
-    }
-    else
-    {
-        <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
-
-        <div class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-            <div class="space-y-6">
-                <Card Class="panel-surface p-5">
-                    <p class="section-kicker">Create</p>
-                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Provision a new auth record
-                    </h2>
-
-                    <div class="mt-5 grid gap-4 md:grid-cols-2">
-                        <div>
-                            <div class="mb-2 block">
-                                <Label For="new-user-email" Value="Email" />
-                            </div>
-                            <TextInput TValue="string" Id="new-user-email" @bind-Value="newUserEmail" Type="email"
-                                       Placeholder="sdk-user@example.com" />
-                        </div>
-                        <div>
-                            <div class="mb-2 block">
-                                <Label For="new-user-password" Value="Password" />
-                            </div>
-                            <TextInput TValue="string" Id="new-user-password" @bind-Value="newUserPassword" Type="password"
-                                       Placeholder="Password123!" />
-                        </div>
-                    </div>
-
-                    <div class="mt-5 flex flex-wrap gap-3">
-                        <Button Color="ButtonColor.Primary" Loading="@(busyAction == "create")" OnClick="CreateUserAsync">
-                            Create user
-                        </Button>
-                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
-                                OnClick="LoadUsersAsync">
-                            Reload list
-                        </Button>
-                    </div>
-                </Card>
-
-                <ResultCard Title="User payload" Description="Latest user object fetched or mutated by the page."
-                            Json="@resultJson" EmptyMessage="Create, inspect, or patch a user to populate this panel." />
+        <p class="mt-2 font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold">@(Demo.IsAdminSession ?
+                    "Unlocked" : "Locked")</p>
+            <p class="mt-3 text-sm text-slate-300">Admin bootstrap is handled on the auth page through the legacy superuser
+                endpoint, then the SDK reuses that JWT for the user service calls here.</p>
             </div>
+        </FeatureHero>
 
-            <Card Class="panel-surface p-5">
-                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                    <div>
-                        <p class="section-kicker">Browse</p>
-                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Latest users</h2>
-                    </div>
-                    <Badge Color="BadgeColor.Gray">Loaded: @users.Count</Badge>
-                </div>
-
-                <div class="mt-5 overflow-x-auto">
-                    <Table Striped="true" Hoverable="true">
-                        <TableHead>
-                            <TableRow>
-                                <TableHeadCell>Email</TableHeadCell>
-                                <TableHeadCell>Username</TableHeadCell>
-                                <TableHeadCell>Verified</TableHeadCell>
-                                <TableHeadCell>
-                                    <span class="sr-only">Actions</span>
-                                </TableHeadCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody Class="divide-y">
-                            @if (users.Count == 0)
-                            {
-                                <TableRow>
-                                    <TableCell>No users loaded yet.</TableCell>
-                                    <TableCell>-</TableCell>
-                                    <TableCell>-</TableCell>
-                                    <TableCell>-</TableCell>
-                                </TableRow>
-                            }
-                            else
-                            {
-                                @foreach (var user in users)
-                                {
-                                    <TableRow>
-                                        <TableCell>@user.Email</TableCell>
-                                        <TableCell>@(string.IsNullOrWhiteSpace(user.UserName) ? "-" : user.UserName)</TableCell>
-                                        <TableCell>
-                                            <Badge Color="@((user.Verified ?? false) ? BadgeColor.Success : BadgeColor.Warning)">
-                                                @((user.Verified ?? false) ? "Verified" : "Pending")</Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div class="flex flex-wrap gap-2">
-                                                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
-                                                            Loading="@(busyAction == $"inspect:{user.Id}")"
-                                                            OnClick="@(() => InspectUserAsync(user.Id))">
-                                                        Inspect
-                                                    </Button>
-                                                    <Button Size="ButtonSize.Small" Color="ButtonColor.Primary"
-                                                            Loading="@(busyAction == $"patch:{user.Id}")"
-                                                            OnClick="@(() => PatchUserAsync(user))">
-                                                        Patch + verify
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    }
-                                }
-                            </TableBody>
-                        </Table>
-                    </div>
-                </Card>
-            </div>
+        @if (!Demo.IsAdminSession)
+        {
+            <StatusAlert Message="Open Auth and sign in as the bundled admin before using the user management wrappers."
+                         IsWarning="true" />
+            <Card
+                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                <Button Href="/auth" Color="ButtonColor.Primary">Go to auth</Button>
+            </Card>
         }
+        else
+        {
+            <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
+
+            <div class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+                <div class="space-y-6">
+                    <Card
+                        Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                            Create</p>
+                            <h2
+                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                Provision a new auth record
+                            </h2>
+
+                            <div class="mt-5 grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <div class="mb-2 block">
+                                        <Label For="new-user-email" Value="Email" />
+                                    </div>
+                                    <TextInput TValue="string" Id="new-user-email" @bind-Value="newUserEmail" Type="email"
+                                               Placeholder="sdk-user@example.com" />
+                                </div>
+                                <div>
+                                    <div class="mb-2 block">
+                                        <Label For="new-user-password" Value="Password" />
+                                    </div>
+                                    <TextInput TValue="string" Id="new-user-password" @bind-Value="newUserPassword" Type="password"
+                                               Placeholder="Password123!" />
+                                </div>
+                            </div>
+
+                            <div class="mt-5 flex flex-wrap gap-3">
+                                <Button Color="ButtonColor.Primary" Loading="@(busyAction == "create")" OnClick="CreateUserAsync">
+                                    Create user
+                                </Button>
+                                <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
+                                        OnClick="LoadUsersAsync">
+                                    Reload list
+                                </Button>
+                            </div>
+                        </Card>
+
+                        <ResultCard Title="User payload" Description="Latest user object fetched or mutated by the page."
+                                    Json="@resultJson" EmptyMessage="Create, inspect, or patch a user to populate this panel." />
+                    </div>
+
+                    <Card
+                        Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                            <div>
+                                <p
+                                    class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                                    Browse</p>
+                                    <h2
+                                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                        Latest users</h2>
+                                    </div>
+                                    <Badge Color="BadgeColor.Gray">Loaded: @users.Count</Badge>
+                                </div>
+
+                                <div class="mt-5 overflow-x-auto">
+                                    <Table Striped="true" Hoverable="true">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableHeadCell>Email</TableHeadCell>
+                                                <TableHeadCell>Username</TableHeadCell>
+                                                <TableHeadCell>Verified</TableHeadCell>
+                                                <TableHeadCell>
+                                                    <span class="sr-only">Actions</span>
+                                                </TableHeadCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody Class="divide-y">
+                                            @if (users.Count == 0)
+                                            {
+                                                <TableRow>
+                                                    <TableCell>No users loaded yet.</TableCell>
+                                                    <TableCell>-</TableCell>
+                                                    <TableCell>-</TableCell>
+                                                    <TableCell>-</TableCell>
+                                                </TableRow>
+                                            }
+                                            else
+                                            {
+                                                @foreach (var user in users)
+                                                {
+                                                    <TableRow>
+                                                        <TableCell>@user.Email</TableCell>
+                                                        <TableCell>@(string.IsNullOrWhiteSpace(user.UserName) ? "-" : user.UserName)</TableCell>
+                                                        <TableCell>
+                                                            <Badge Color="@((user.Verified ?? false) ? BadgeColor.Success : BadgeColor.Warning)">
+                                                                @((user.Verified ?? false) ? "Verified" : "Pending")</Badge>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div class="flex flex-wrap gap-2">
+                                                                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
+                                                                            Loading="@(busyAction == $"inspect:{user.Id}")"
+                                                                            OnClick="@(() => InspectUserAsync(user.Id))">
+                                                                        Inspect
+                                                                    </Button>
+                                                                    <Button Size="ButtonSize.Small" Color="ButtonColor.Primary"
+                                                                            Loading="@(busyAction == $"patch:{user.Id}")"
+                                                                            OnClick="@(() => PatchUserAsync(user))">
+                                                                        Patch + verify
+                                                                    </Button>
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    }
+                                                }
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </Card>
+                            </div>
+                        }
 
 @code {
     private readonly List<UserModel> users = [];

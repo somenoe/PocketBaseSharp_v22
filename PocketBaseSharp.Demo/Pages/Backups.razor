@@ -9,7 +9,7 @@
              Method="GetFullListAsync(), CreateAsync(), DownloadAsync(), DeleteAsync()" Access="Admin required">
     <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
         <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Safety rail</p>
-        <p class="mt-2 font-display text-2xl font-semibold">Restore is excluded</p>
+        <p class="mt-2 font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold">Restore is excluded</p>
         <p class="mt-3 text-sm text-slate-300">The backup service supports restore, but this demo stops at create, list,
             stream preview, and delete to avoid trashing the local data directory by accident.</p>
         </div>
@@ -18,7 +18,8 @@
     @if (!Demo.IsAdminSession)
     {
         <StatusAlert Message="Open Auth and sign in as admin before calling BackupService." IsWarning="true" />
-        <Card Class="panel-surface p-5">
+        <Card
+            Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
             <Button Href="/auth" Color="ButtonColor.Primary">Go to auth</Button>
         </Card>
     }
@@ -31,98 +32,107 @@
 
         <div class="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
             <div class="space-y-6">
-                <Card Class="panel-surface p-5">
-                    <p class="section-kicker">Create</p>
-                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Generate a fresh backup</h2>
+                <Card
+                    Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                    <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                        Create</p>
+                        <h2
+                            class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                            Generate a fresh backup</h2>
 
-                    <div class="mt-5">
-                        <div class="mb-2 block">
-                            <Label For="backup-name" Value="Backup filename" />
-                        </div>
-                        <TextInput TValue="string" Id="backup-name" @bind-Value="backupName"
-                                   Placeholder="sdk-demo-20260331.zip" />
+                            <div class="mt-5">
+                                <div class="mb-2 block">
+                                    <Label For="backup-name" Value="Backup filename" />
+                                </div>
+                                <TextInput TValue="string" Id="backup-name" @bind-Value="backupName"
+                                           Placeholder="sdk-demo-20260331.zip" />
+                            </div>
+
+                            <div class="mt-5 flex flex-wrap gap-3">
+                                <Button Color="ButtonColor.Primary" Loading="@(busyAction == "create")" OnClick="CreateBackupAsync">
+                                    Create backup
+                                </Button>
+                                <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
+                                        OnClick="LoadBackupsAsync">
+                                    Reload backups
+                                </Button>
+                            </div>
+                        </Card>
+
+                        <ResultCard Title="Backup payload"
+                                    Description="Latest backup list item or a preview of streamed bytes from DownloadAsync()."
+                                    Json="@resultJson"
+                                    EmptyMessage="Create a backup, load the list, or preview a stream to populate this panel." />
                     </div>
 
-                    <div class="mt-5 flex flex-wrap gap-3">
-                        <Button Color="ButtonColor.Primary" Loading="@(busyAction == "create")" OnClick="CreateBackupAsync">
-                            Create backup
-                        </Button>
-                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
-                                OnClick="LoadBackupsAsync">
-                            Reload backups
-                        </Button>
+                    <Card
+                        Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                            <div>
+                                <p
+                                    class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                                    Browse</p>
+                                    <h2
+                                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                        Available backup files
+                                    </h2>
+                                </div>
+                                <Badge Color="BadgeColor.Gray">Loaded: @backups.Count</Badge>
+                            </div>
+
+                            <div class="mt-5 overflow-x-auto">
+                                <Table Striped="true" Hoverable="true">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableHeadCell>Key</TableHeadCell>
+                                            <TableHeadCell>Size</TableHeadCell>
+                                            <TableHeadCell>Modified</TableHeadCell>
+                                            <TableHeadCell>
+                                                <span class="sr-only">Actions</span>
+                                            </TableHeadCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody Class="divide-y">
+                                        @if (backups.Count == 0)
+                                        {
+                                            <TableRow>
+                                                <TableCell>No backups found.</TableCell>
+                                                <TableCell>-</TableCell>
+                                                <TableCell>-</TableCell>
+                                                <TableCell>-</TableCell>
+                                            </TableRow>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var backup in backups)
+                                            {
+                                                <TableRow>
+                                                    <TableCell>@backup.Key</TableCell>
+                                                    <TableCell>@FormatSize(backup.Size)</TableCell>
+                                                    <TableCell>@backup.Modified?.ToLocalTime().ToString("g")</TableCell>
+                                                    <TableCell>
+                                                        <div class="flex flex-wrap gap-2">
+                                                            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
+                                                                    Loading="@(busyAction == $"preview:{backup.Key}")"
+                                                                    OnClick="@(() => PreviewBackupAsync(backup.Key))">
+                                                                Preview stream
+                                                            </Button>
+                                                            <Button Size="ButtonSize.Small" Color="ButtonColor.Red"
+                                                                    Loading="@(busyAction == $"delete:{backup.Key}")"
+                                                                    OnClick="@(() => DeleteBackupAsync(backup.Key))">
+                                                                Delete
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            }
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </Card>
                     </div>
-                </Card>
-
-                <ResultCard Title="Backup payload"
-                            Description="Latest backup list item or a preview of streamed bytes from DownloadAsync()."
-                            Json="@resultJson"
-                            EmptyMessage="Create a backup, load the list, or preview a stream to populate this panel." />
-            </div>
-
-            <Card Class="panel-surface p-5">
-                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                    <div>
-                        <p class="section-kicker">Browse</p>
-                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Available backup files
-                        </h2>
-                    </div>
-                    <Badge Color="BadgeColor.Gray">Loaded: @backups.Count</Badge>
-                </div>
-
-                <div class="mt-5 overflow-x-auto">
-                    <Table Striped="true" Hoverable="true">
-                        <TableHead>
-                            <TableRow>
-                                <TableHeadCell>Key</TableHeadCell>
-                                <TableHeadCell>Size</TableHeadCell>
-                                <TableHeadCell>Modified</TableHeadCell>
-                                <TableHeadCell>
-                                    <span class="sr-only">Actions</span>
-                                </TableHeadCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody Class="divide-y">
-                            @if (backups.Count == 0)
-                            {
-                                <TableRow>
-                                    <TableCell>No backups found.</TableCell>
-                                    <TableCell>-</TableCell>
-                                    <TableCell>-</TableCell>
-                                    <TableCell>-</TableCell>
-                                </TableRow>
-                            }
-                            else
-                            {
-                                @foreach (var backup in backups)
-                                {
-                                    <TableRow>
-                                        <TableCell>@backup.Key</TableCell>
-                                        <TableCell>@FormatSize(backup.Size)</TableCell>
-                                        <TableCell>@backup.Modified?.ToLocalTime().ToString("g")</TableCell>
-                                        <TableCell>
-                                            <div class="flex flex-wrap gap-2">
-                                                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
-                                                        Loading="@(busyAction == $"preview:{backup.Key}")"
-                                                        OnClick="@(() => PreviewBackupAsync(backup.Key))">
-                                                    Preview stream
-                                                </Button>
-                                                <Button Size="ButtonSize.Small" Color="ButtonColor.Red"
-                                                        Loading="@(busyAction == $"delete:{backup.Key}")"
-                                                        OnClick="@(() => DeleteBackupAsync(backup.Key))">
-                                                    Delete
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                }
-                            }
-                        </TableBody>
-                    </Table>
-                </div>
-            </Card>
-        </div>
-    }
+                }
 
 @code {
     private readonly List<BackupModel> backups = [];

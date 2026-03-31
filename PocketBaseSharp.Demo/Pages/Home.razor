@@ -8,11 +8,11 @@
              Description="A local-first command deck for the SDK. Each page isolates one service surface so you can inspect auth, request paths, response payloads, and realtime behavior without dropping into the test suite."
              Eyebrow="Workspace overview" Service="PocketBase client" Method="http://127.0.0.1:8090/"
              Access="Mixed public + admin flows">
-    <div class="dashboard-spotlight">
+    <div class="min-w-0 rounded-[1.5rem] border border-white/10 bg-[linear-gradient(160deg,rgba(2,6,23,0.94),rgba(15,23,42,0.84))] p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
         <div class="flex items-start justify-between gap-4">
             <div>
                 <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Live target</p>
-                <p class="mt-2 font-display text-2xl font-semibold">127.0.0.1:8090</p>
+                <p class="mt-2 font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold">127.0.0.1:8090</p>
             </div>
 
             <Badge Color="@(Demo.IsAuthenticated ? BadgeColor.Success : BadgeColor.Gray)">@Demo.SessionKind</Badge>
@@ -58,12 +58,12 @@
                 <div class="mt-5 grid gap-4 lg:grid-cols-3">
                     @foreach (var step in runbookSteps)
                     {
-                        <Card Class="panel-surface p-5 transition-transform duration-200 hover:-translate-y-1">
+                        <Card Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                             <div class="flex items-start gap-4">
-                                <div class="launch-step-index">@step.Order</div>
+                                <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#ea580c,#f59e0b_56%,#38bdf8)] font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.1rem] font-bold text-white shadow-[0_18px_38px_-24px_rgba(194,65,12,0.7)]">@step.Order</div>
                                 <div>
-                                    <p class="section-kicker">Step @step.Order</p>
-                                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">@step.Title
+                                    <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Step @step.Order</p>
+                                    <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">@step.Title
                                     </h2>
                                     <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">@step.Copy</p>
                                     <Button Href="@step.Href"
@@ -83,9 +83,9 @@
                 <div class="mt-5 grid gap-4 lg:grid-cols-3">
                     @foreach (var cluster in serviceClusters)
                     {
-                        <Card Class="panel-surface p-5 transition-transform duration-200 hover:-translate-y-1">
-                            <p class="section-kicker">@cluster.Kicker</p>
-                            <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">@cluster.Title</h2>
+                        <Card Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">@cluster.Kicker</p>
+                            <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">@cluster.Title</h2>
                             <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">@cluster.Copy</p>
                             <div class="mt-4 flex flex-wrap gap-2">
                                 @foreach (var pageName in cluster.Pages)
@@ -102,12 +102,12 @@
                 <div class="mt-5 grid gap-4 lg:grid-cols-3">
                     @foreach (var mode in accessModes)
                     {
-                        <Card Class="panel-surface p-5 transition-transform duration-200 hover:-translate-y-1">
+                        <Card Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                             <div class="flex items-center justify-between gap-3">
-                                <p class="section-kicker">Access tier</p>
+                                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Access tier</p>
                                 <Badge Color="@mode.Color">@mode.Badge</Badge>
                             </div>
-                            <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">@mode.Title</h2>
+                            <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">@mode.Title</h2>
                             <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">@mode.Copy</p>
                         </Card>
                     }
@@ -116,12 +116,12 @@
         </TabPanelsContent>
     </Tabs>
 
-    <Card Class="panel-surface overflow-hidden p-0">
+    <Card Class="overflow-hidden rounded-[1.5rem] border border-white/50 bg-white/80 p-0 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
         <div class="p-5">
             <div class="flex flex-col gap-4 border-b border-black/5 pb-5 dark:border-white/10">
                 <div>
-                    <p class="section-kicker">Explorer</p>
-                    <h2 class="font-display text-3xl font-semibold text-slate-900 dark:text-white">Browse demo surfaces</h2>
+                    <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Explorer</p>
+                    <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold text-slate-900 dark:text-white">Browse demo surfaces</h2>
                     <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Use the search field to narrow the service
                         pages
                         by name, access level, or the SDK surface they focus on.</p>
@@ -150,11 +150,11 @@
                         @foreach (var feature in FilteredFeatures)
                         {
                             <Card Href="@feature.Href"
-                                  Class="feature-explorer-card p-5 transition-transform duration-200 hover:-translate-y-1">
+                                  Class="min-w-0 rounded-[1.5rem] border border-slate-300/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.76)),linear-gradient(135deg,rgba(251,146,60,0.08),rgba(56,189,248,0.04))] p-5 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.3)] transition-transform duration-200 hover:-translate-y-1 dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(15,23,42,0.74)),linear-gradient(135deg,rgba(251,146,60,0.1),rgba(56,189,248,0.06))] dark:shadow-[0_24px_60px_-40px_rgba(0,0,0,0.35)]">
                                 <div class="flex items-start justify-between gap-3">
                                     <div>
-                                        <p class="section-kicker">@feature.Category</p>
-                                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">@feature.Title
+                                        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">@feature.Category</p>
+                                        <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">@feature.Title
                                         </h2>
                                     </div>
                                     <Badge
@@ -178,40 +178,40 @@
             </Card>
 
             <div class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-                <Card Class="panel-surface overflow-hidden p-0">
+                <Card Class="overflow-hidden rounded-[1.5rem] border border-white/50 bg-white/80 p-0 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                     <div class="p-5">
                         <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                             <div>
-                                <p class="section-kicker">Session</p>
-                                <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Current client state
+                                            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">Session</p>
+                                            <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">Current client state
                                 </h2>
                             </div>
                             <Badge Color="@(Demo.IsAuthenticated ? BadgeColor.Success : BadgeColor.Gray)">@Demo.SessionKind</Badge>
                         </div>
 
                         <div class="mt-5 grid gap-3 sm:grid-cols-2">
-                            <div class="shell-stat-card">
-                                <p class="shell-stat-label">Session kind</p>
-                                <p class="shell-stat-value">@Demo.SessionKind</p>
-                                <p class="shell-stat-copy">Current auth model in AuthStore</p>
+                            <div class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Session kind</p>
+                                <p class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">@Demo.SessionKind</p>
+                                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Current auth model in AuthStore</p>
                             </div>
 
-                            <div class="shell-stat-card">
-                                <p class="shell-stat-label">Auth state</p>
-                                <p class="shell-stat-value">@(Demo.IsAuthenticated ? "Valid token" : "Anonymous")</p>
-                                <p class="shell-stat-copy">Admin-only pages unlock after sign-in</p>
+                            <div class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Auth state</p>
+                                <p class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">@(Demo.IsAuthenticated ? "Valid token" : "Anonymous")</p>
+                                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Admin-only pages unlock after sign-in</p>
                             </div>
 
-                            <div class="shell-stat-card">
-                                <p class="shell-stat-label">Current email</p>
-                                <p class="shell-stat-value">@(Demo.CurrentEmail ?? "Not signed in")</p>
-                                <p class="shell-stat-copy">Identity captured from the active auth model</p>
+                            <div class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Current email</p>
+                                <p class="mt-2.5 break-all font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">@(Demo.CurrentEmail ?? "Not signed in")</p>
+                                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Identity captured from the active auth model</p>
                             </div>
 
-                            <div class="shell-stat-card">
-                                <p class="shell-stat-label">Last request</p>
-                                <p class="shell-stat-value">@(Demo.LastRequestMethod ?? "Idle")</p>
-                                <p class="shell-stat-copy">@(Demo.LastRequestPath ?? "No network traffic yet")</p>
+                            <div class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Last request</p>
+                                <p class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">@(Demo.LastRequestMethod ?? "Idle")</p>
+                                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@(Demo.LastRequestPath ?? "No network traffic yet")</p>
                             </div>
                         </div>
                     </div>

@@ -8,7 +8,7 @@
              Eyebrow="Service page" Service="CollectionService" Method="ListAsync(), GetByNameAsync()" Access="Admin required">
     <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
         <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Focus</p>
-        <p class="mt-2 font-display text-2xl font-semibold">Schema inspection</p>
+        <p class="mt-2 font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold">Schema inspection</p>
         <p class="mt-3 text-sm text-slate-300">Use the lookup control to jump straight to <span
             class="font-semibold text-white">entry</span>, <span class="font-semibold text-white">todos</span>, or
             <span class="font-semibold text-white">users</span>.
@@ -19,7 +19,8 @@
 @if (!Demo.IsAdminSession)
 {
     <StatusAlert Message="Open Auth and sign in as admin before calling CollectionService." IsWarning="true" />
-    <Card Class="panel-surface p-5">
+    <Card
+        Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
         <Button Href="/auth" Color="ButtonColor.Primary">Go to auth</Button>
     </Card>
 }
@@ -29,79 +30,88 @@ else
 
     <div class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <div class="space-y-6">
-            <Card Class="panel-surface p-5">
-                <p class="section-kicker">Lookup</p>
-                <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Fetch a collection by name
-                </h2>
+            <Card
+                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                    Lookup</p>
+                    <h2
+                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                        Fetch a collection by name
+                    </h2>
 
-                <div class="mt-5">
-                    <div class="mb-2 block">
-                        <Label For="collection-name" Value="Collection name" />
+                    <div class="mt-5">
+                        <div class="mb-2 block">
+                            <Label For="collection-name" Value="Collection name" />
+                        </div>
+                        <TextInput TValue="string" Id="collection-name" @bind-Value="lookupName" Placeholder="entry" />
                     </div>
-                    <TextInput TValue="string" Id="collection-name" @bind-Value="lookupName" Placeholder="entry" />
-                </div>
 
-                <div class="mt-5 flex flex-wrap gap-3">
-                    <Button Color="ButtonColor.Primary" Loading="@(busyAction == "lookup")" OnClick="LookupCollectionAsync">
-                        Inspect collection
-                    </Button>
-                    <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
-                            OnClick="LoadCollectionsAsync">
-                        Reload list
-                    </Button>
-                </div>
-            </Card>
-
-            <ResultCard Title="Collection payload" Description="Latest collection model returned from the service."
-                        Json="@resultJson" EmptyMessage="Lookup a collection or choose one from the table." />
-        </div>
-
-        <Card Class="panel-surface p-5">
-            <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                    <p class="section-kicker">Browse</p>
-                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Collections in the local
-                        server</h2>
-                    </div>
-                    <Badge Color="BadgeColor.Gray">Loaded: @collections.Count</Badge>
-                </div>
-
-                <div class="mt-5 overflow-x-auto">
-                    <Table Striped="true" Hoverable="true">
-                        <TableHead>
-                            <TableRow>
-                                <TableHeadCell>Name</TableHeadCell>
-                                <TableHeadCell>Type</TableHeadCell>
-                                <TableHeadCell>Schema fields</TableHeadCell>
-                                <TableHeadCell>
-                                    <span class="sr-only">Actions</span>
-                                </TableHeadCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody Class="divide-y">
-                            @foreach (var collection in collections)
-                            {
-                                <TableRow>
-                                    <TableCell>@collection.Name</TableCell>
-                                    <TableCell>
-                                        <Badge Color="@(collection.System == true ? BadgeColor.Info : BadgeColor.Success)">
-                                            @collection.Type</Badge>
-                                        </TableCell>
-                                        <TableCell>@(collection.Schema?.Count() ?? 0)</TableCell>
-                                        <TableCell>
-                                            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
-                                                    OnClick="@(() => InspectCollection(collection))">
-                                                Inspect
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <Button Color="ButtonColor.Primary" Loading="@(busyAction == "lookup")" OnClick="LookupCollectionAsync">
+                            Inspect collection
+                        </Button>
+                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
+                                OnClick="LoadCollectionsAsync">
+                            Reload list
+                        </Button>
                     </div>
                 </Card>
+
+                <ResultCard Title="Collection payload" Description="Latest collection model returned from the service."
+                            Json="@resultJson" EmptyMessage="Lookup a collection or choose one from the table." />
             </div>
-        }
+
+            <Card
+                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <p
+                            class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                            Browse</p>
+                            <h2
+                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                Collections in the local
+                                server</h2>
+                            </div>
+                            <Badge Color="BadgeColor.Gray">Loaded: @collections.Count</Badge>
+                        </div>
+
+                        <div class="mt-5 overflow-x-auto">
+                            <Table Striped="true" Hoverable="true">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableHeadCell>Name</TableHeadCell>
+                                        <TableHeadCell>Type</TableHeadCell>
+                                        <TableHeadCell>Schema fields</TableHeadCell>
+                                        <TableHeadCell>
+                                            <span class="sr-only">Actions</span>
+                                        </TableHeadCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody Class="divide-y">
+                                    @foreach (var collection in collections)
+                                    {
+                                        <TableRow>
+                                            <TableCell>@collection.Name</TableCell>
+                                            <TableCell>
+                                                <Badge Color="@(collection.System == true ? BadgeColor.Info : BadgeColor.Success)">
+                                                    @collection.Type</Badge>
+                                                </TableCell>
+                                                <TableCell>@(collection.Schema?.Count() ?? 0)</TableCell>
+                                                <TableCell>
+                                                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
+                                                            OnClick="@(() => InspectCollection(collection))">
+                                                        Inspect
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </Card>
+                    </div>
+                }
 
 @code {
     private readonly List<CollectionModel> collections = [];

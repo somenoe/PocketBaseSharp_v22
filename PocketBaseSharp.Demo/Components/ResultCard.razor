@@ -1,31 +1,36 @@
-<Card Class="panel-surface overflow-hidden p-0">
+<Card
+    Class="overflow-hidden rounded-[1.5rem] border border-white/50 bg-white/80 p-0 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
     <div class="flex items-start justify-between gap-3 px-5 py-5">
         <div>
-            <p class="section-kicker">Inspector</p>
-            <h2 class="font-display text-xl font-semibold text-slate-900 dark:text-white">@Title</h2>
-            @if (!string.IsNullOrWhiteSpace(Description))
-            {
-                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@Description</p>
-            }
-        </div>
-        <Badge Color="BadgeColor.Gray">JSON</Badge>
-    </div>
+            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                Inspector</p>
+                <h2
+                    class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-xl font-semibold text-slate-900 dark:text-white">
+                    @Title</h2>
+                    @if (!string.IsNullOrWhiteSpace(Description))
+                    {
+                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@Description</p>
+                    }
+                </div>
+                <Badge Color="BadgeColor.Gray">JSON</Badge>
+            </div>
 
-    <div class="px-5 pb-5">
-        @if (string.IsNullOrWhiteSpace(Json))
-        {
-            <EmptyState Title="No payload yet" Description="@EmptyMessage">
-                <Icon>
-                    <ClipboardArrowIcon class="h-12 w-12 text-slate-400 dark:text-slate-500" />
-                </Icon>
-            </EmptyState>
-        }
-        else
-        {
-            <pre class="result-pre max-h-80">@Json</pre>
-        }
-    </div>
-</Card>
+            <div class="px-5 pb-5">
+                @if (string.IsNullOrWhiteSpace(Json))
+                {
+                    <EmptyState Title="No payload yet" Description="@EmptyMessage">
+                        <Icon>
+                            <ClipboardArrowIcon class="h-12 w-12 text-slate-400 dark:text-slate-500" />
+                        </Icon>
+                    </EmptyState>
+                }
+                else
+                {
+                    <pre
+                    class="max-h-80 overflow-x-auto rounded-[1rem] bg-slate-950 p-4 text-[0.78rem] leading-[1.45] text-slate-200">@Json</pre>
+                }
+            </div>
+        </Card>
 
 @code {
     [Parameter, EditorRequired]
