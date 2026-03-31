@@ -1,0 +1,256 @@
+@page "/backups"
+@inject DemoPocketBaseService Demo
+
+<PageTitle>Backups</PageTitle>
+
+<FeatureHero Title="Backups"
+             Description="Create, list, stream, and delete backups using BackupService. Restore is intentionally omitted from the UI because it is a destructive server-wide operation."
+             Eyebrow="Service page" Service="BackupService"
+             Method="GetFullListAsync(), CreateAsync(), DownloadAsync(), DeleteAsync()" Access="Admin required">
+    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Safety rail</p>
+        <p class="mt-2 font-display text-2xl font-semibold">Restore is excluded</p>
+        <p class="mt-3 text-sm text-slate-300">The backup service supports restore, but this demo stops at create, list,
+            stream preview, and delete to avoid trashing the local data directory by accident.</p>
+        </div>
+    </FeatureHero>
+
+    @if (!Demo.IsAdminSession)
+    {
+        <StatusAlert Message="Open Auth and sign in as admin before calling BackupService." IsWarning="true" />
+        <Card Class="panel-surface p-5">
+            <Button Href="/auth" Color="ButtonColor.Primary">Go to auth</Button>
+        </Card>
+    }
+    else
+    {
+        <Alert Color="AlertColor.Warning" Icon="@(new ExclamationTriangleIcon())" TextEmphasis="Destructive operations ahead"
+               Text="Delete really deletes backup files from the local PocketBase storage. Restore is not exposed in this UI on purpose." />
+
+        <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
+
+        <div class="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+            <div class="space-y-6">
+                <Card Class="panel-surface p-5">
+                    <p class="section-kicker">Create</p>
+                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Generate a fresh backup</h2>
+
+                    <div class="mt-5">
+                        <div class="mb-2 block">
+                            <Label For="backup-name" Value="Backup filename" />
+                        </div>
+                        <TextInput TValue="string" Id="backup-name" @bind-Value="backupName"
+                                   Placeholder="sdk-demo-20260331.zip" />
+                    </div>
+
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <Button Color="ButtonColor.Primary" Loading="@(busyAction == "create")" OnClick="CreateBackupAsync">
+                            Create backup
+                        </Button>
+                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
+                                OnClick="LoadBackupsAsync">
+                            Reload backups
+                        </Button>
+                    </div>
+                </Card>
+
+                <ResultCard Title="Backup payload"
+                            Description="Latest backup list item or a preview of streamed bytes from DownloadAsync()."
+                            Json="@resultJson"
+                            EmptyMessage="Create a backup, load the list, or preview a stream to populate this panel." />
+            </div>
+
+            <Card Class="panel-surface p-5">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <p class="section-kicker">Browse</p>
+                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Available backup files
+                        </h2>
+                    </div>
+                    <Badge Color="BadgeColor.Gray">Loaded: @backups.Count</Badge>
+                </div>
+
+                <div class="mt-5 overflow-x-auto">
+                    <Table Striped="true" Hoverable="true">
+                        <TableHead>
+                            <TableRow>
+                                <TableHeadCell>Key</TableHeadCell>
+                                <TableHeadCell>Size</TableHeadCell>
+                                <TableHeadCell>Modified</TableHeadCell>
+                                <TableHeadCell>
+                                    <span class="sr-only">Actions</span>
+                                </TableHeadCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody Class="divide-y">
+                            @if (backups.Count == 0)
+                            {
+                                <TableRow>
+                                    <TableCell>No backups found.</TableCell>
+                                    <TableCell>-</TableCell>
+                                    <TableCell>-</TableCell>
+                                    <TableCell>-</TableCell>
+                                </TableRow>
+                            }
+                            else
+                            {
+                                @foreach (var backup in backups)
+                                {
+                                    <TableRow>
+                                        <TableCell>@backup.Key</TableCell>
+                                        <TableCell>@FormatSize(backup.Size)</TableCell>
+                                        <TableCell>@backup.Modified?.ToLocalTime().ToString("g")</TableCell>
+                                        <TableCell>
+                                            <div class="flex flex-wrap gap-2">
+                                                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
+                                                        Loading="@(busyAction == $"preview:{backup.Key}")"
+                                                        OnClick="@(() => PreviewBackupAsync(backup.Key))">
+                                                    Preview stream
+                                                </Button>
+                                                <Button Size="ButtonSize.Small" Color="ButtonColor.Red"
+                                                        Loading="@(busyAction == $"delete:{backup.Key}")"
+                                                        OnClick="@(() => DeleteBackupAsync(backup.Key))">
+                                                    Delete
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                }
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+            </Card>
+        </div>
+    }
+
+@code {
+    private readonly List<BackupModel> backups = [];
+    private string backupName = $"sdk-demo-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}.zip";
+    private string? resultJson;
+    private string? statusMessage;
+    private string? busyAction;
+    private bool isError;
+    private bool isWarning;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Demo.IsAdminSession)
+        {
+            await LoadBackupsAsync();
+        }
+    }
+
+    private async Task LoadBackupsAsync()
+    {
+        await LoadBackupsAsync(null);
+    }
+
+    private async Task LoadBackupsAsync(string? successMessage)
+    {
+        busyAction = "load";
+        var result = await Demo.Client.Backup.GetFullListAsync();
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            backups.Clear();
+            backups.AddRange(result.Value.OrderByDescending(item => item.Modified ?? DateTime.MinValue));
+            if (string.IsNullOrWhiteSpace(resultJson))
+            {
+                resultJson = Demo.ToJson(result.Value);
+            }
+            SetStatus(successMessage ?? $"Loaded {backups.Count} backup files.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task CreateBackupAsync()
+    {
+        busyAction = "create";
+        var requestedName = string.IsNullOrWhiteSpace(backupName) ? null : backupName;
+        var result = await Demo.Client.Backup.CreateAsync(requestedName);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            backupName = $"sdk-demo-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}.zip";
+            resultJson = Demo.ToJson(new { created = true, requestedName });
+            await LoadBackupsAsync("Created a new backup and refreshed the list.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task PreviewBackupAsync(string? key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return;
+        }
+
+        busyAction = $"preview:{key}";
+        var result = await Demo.Client.Backup.DownloadAsync(key);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            using var stream = result.Value;
+            var buffer = new byte[256];
+            var bytesRead = await stream.ReadAsync(buffer);
+            var preview = bytesRead > 0 ? Convert.ToBase64String(buffer[..bytesRead]) : string.Empty;
+            resultJson = Demo.ToJson(new { key, bytesRead, base64Preview = preview });
+            SetStatus($"Streamed {bytesRead} bytes from {key}.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task DeleteBackupAsync(string? key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return;
+        }
+
+        busyAction = $"delete:{key}";
+        var result = await Demo.Client.Backup.DeleteAsync(key);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            await LoadBackupsAsync($"Deleted backup {key}.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private static string FormatSize(int? size)
+    {
+        if (size is null)
+        {
+            return "-";
+        }
+
+        return size < 1024 ? $"{size} B" : $"{size / 1024.0:F1} KB";
+    }
+
+    private void SetFailure(ResultBase result)
+    {
+        statusMessage = Demo.Describe(result);
+        isError = true;
+        isWarning = false;
+    }
+
+    private void SetStatus(string message, bool warning = false)
+    {
+        statusMessage = message;
+        isError = false;
+        isWarning = warning;
+    }
+}

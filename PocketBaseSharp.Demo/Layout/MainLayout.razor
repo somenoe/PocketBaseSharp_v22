@@ -1,0 +1,495 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject DemoPocketBaseService Demo
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<div class="relative min-h-screen overflow-hidden">
+    <div class="app-orb app-orb-left"></div>
+    <div class="app-orb app-orb-right"></div>
+
+    <Drawer Show="@isMobileNavOpen" OnClose="CloseMobileNav" Position="DrawerPosition.Left">
+        <DrawerHeader>Demo navigation</DrawerHeader>
+        <DrawerItems>
+            <div class="space-y-6">
+                <Card Class="panel-surface p-5">
+                    <p class="section-kicker">Current session</p>
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">@Demo.SessionKind</h2>
+                            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@ResolveSessionSummary()</p>
+                        </div>
+                        <Badge Color="@ResolveSessionBadgeColor()">@ResolveAuthLabel()</Badge>
+                    </div>
+                </Card>
+
+                <Sidebar Class="panel-surface border-none bg-transparent px-3 py-3 shadow-none">
+                    <SidebarItemGroup>
+                        @foreach (var item in navigationItems)
+                        {
+                            <SidebarItem Href="@item.Href" Icon="@item.Icon">
+                                @item.Label
+                            </SidebarItem>
+                        }
+                    </SidebarItemGroup>
+
+                    <SidebarCTA>
+                        <div class="space-y-3">
+                            <p class="text-sm text-slate-700 dark:text-slate-300">Use the auth workspace to unlock admin-only pages, then jump back into the service page you care about.</p>
+                            <div class="flex flex-wrap gap-2">
+                                <Button Href="/auth" Color="ButtonColor.Primary" Class="w-full sm:w-auto">Open auth</Button>
+                                <Button Href="/health" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Class="w-full sm:w-auto">Ping health</Button>
+                            </div>
+                        </div>
+                    </SidebarCTA>
+                </Sidebar>
+            </div>
+        </DrawerItems>
+    </Drawer>
+
+    <div class="relative z-10 pb-12">
+        <div class="mx-auto w-[min(96rem,calc(100%-1.5rem))] space-y-6 pt-4">
+        <Navbar
+            Class="shell-topbar rounded-[2rem] border border-white/50 bg-white/85 px-4 py-3 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)] backdrop-blur dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_24px_90px_-36px_rgba(0,0,0,0.9)] lg:px-6">
+            <NavbarBrand Href="/">
+                <div class="flex items-center gap-4">
+                    <div class="brand-mark">PB</div>
+                    <div>
+                        <div class="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+                            PocketBaseSharp</div>
+                        <div class="text-xs uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Local SDK command deck</div>
+                    </div>
+                </div>
+            </NavbarBrand>
+
+            <div class="flex items-center gap-3">
+                <div class="hidden items-center gap-2 lg:flex">
+                    <Badge Color="BadgeColor.Gray">@CurrentNavigationItem.Label</Badge>
+                    <Badge Color="BadgeColor.Info">@TrimBaseUrl()</Badge>
+                </div>
+
+                <Tooltip Content="Open navigation" Placement="TooltipPlacement.Bottom">
+                    <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Class="xl:hidden" OnClick="OpenMobileNav">
+                        <BarsIcon />
+                        <span class="sr-only">Open navigation</span>
+                    </Button>
+                </Tooltip>
+
+                <Tooltip Content="Toggle color theme" Placement="TooltipPlacement.Bottom">
+                    <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" OnClick="ToggleThemeAsync">
+                        Theme
+                    </Button>
+                </Tooltip>
+
+                <Dropdown Inline="true" ArrowIcon="false" Placement="DropdownPlacement.Bottom" MenuClass="w-72">
+                    <CustomTrigger>
+                        <div class="shell-profile-trigger">
+                            <div class="hidden text-right sm:block">
+                                <div class="text-sm font-semibold text-slate-900 dark:text-white">@ResolveProfileTitle()</div>
+                                <div class="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">@CurrentNavigationItem.Label</div>
+                            </div>
+
+                            <div class="relative">
+                                <Avatar Rounded="true" Image="favicon.svg" Alt="PocketBaseSharp workspace" />
+                                <span class="@ResolveSessionDotClass()"></span>
+                            </div>
+                        </div>
+                    </CustomTrigger>
+
+                    <ChildContent>
+                        <DropdownHeader>
+                            <span class="block text-sm">@ResolveProfileTitle()</span>
+                            <span class="block truncate text-sm font-medium text-slate-500 dark:text-slate-400">@Demo.BaseUrl</span>
+                        </DropdownHeader>
+                        <DropdownItem Icon="@(new HomeIcon())" OnClick="OpenOverview">Open overview</DropdownItem>
+                        <DropdownItem Icon="@(new UserIcon())" OnClick="OpenAuth">Open auth workspace</DropdownItem>
+                        <DropdownItem Icon="@(new HeartIcon())" OnClick="OpenHealth">Run health check</DropdownItem>
+                        <DropdownDivider />
+                        <DropdownItem Icon="@(new GearIcon())" OnClick="ToggleThemeAsync">Toggle theme</DropdownItem>
+                        @if (Demo.IsAuthenticated)
+                        {
+                            <DropdownDivider />
+                            <DropdownItem Icon="@(new ArrowRightToBracketIcon())" OnClick="HandleLogout">Sign out</DropdownItem>
+                        }
+                    </ChildContent>
+                </Dropdown>
+            </div>
+        </Navbar>
+
+        <Card Class="panel-surface shell-command-center overflow-hidden p-0">
+            <div class="grid gap-6 px-5 py-5 lg:grid-cols-[1.15fr_0.85fr] lg:px-6">
+                <div class="space-y-5">
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div class="space-y-3">
+                            <p class="section-kicker">Workspace control</p>
+                            <h2 class="font-display text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">@CurrentNavigationItem.Label</h2>
+                            <p class="max-w-2xl text-sm text-slate-600 dark:text-slate-300 md:text-base">@CurrentNavigationItem.Summary</p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2">
+                            <Badge Color="BadgeColor.Primary">@CurrentNavigationItem.Access</Badge>
+                            <Badge Color="BadgeColor.Info">@Demo.SessionKind</Badge>
+                        </div>
+                    </div>
+
+                    <Toolbar Embedded="true" Class="w-full rounded-[1.25rem] border border-white/40 bg-white/55 px-4 py-3 dark:border-white/10 dark:bg-slate-950/45">
+                        <ChildContent>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <Button Href="/auth" Color="ButtonColor.Primary" Size="ButtonSize.Small">Auth hub</Button>
+                                <Button Href="/health" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Size="ButtonSize.Small">Ping health</Button>
+                                <Button Href="/records" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Size="ButtonSize.Small">Browse records</Button>
+                                @if (CurrentPath != "/")
+                                {
+                                    <Button Href="/" Variant="ButtonVariant.Outline" Color="ButtonColor.Dark" Size="ButtonSize.Small">Back to overview</Button>
+                                }
+                            </div>
+                        </ChildContent>
+                    </Toolbar>
+
+                    <div class="grid gap-3 md:grid-cols-2">
+                        <div class="shell-stat-card">
+                            <p class="shell-stat-label">Route mode</p>
+                            <p class="shell-stat-value">@CurrentNavigationItem.Access</p>
+                            <p class="shell-stat-copy">@ResolveSessionSummary()</p>
+                        </div>
+
+                        <div class="shell-stat-card">
+                            <p class="shell-stat-label">Next best action</p>
+                            <p class="shell-stat-value">@ResolveNextActionTitle()</p>
+                            <p class="shell-stat-copy">@ResolveNextActionCopy()</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                    <div class="shell-stat-card">
+                        <p class="shell-stat-label">Endpoint</p>
+                        <p class="shell-stat-value">@TrimBaseUrl()</p>
+                        <p class="shell-stat-copy">Local PocketBase target</p>
+                    </div>
+
+                    <div class="shell-stat-card">
+                        <p class="shell-stat-label">Last request</p>
+                        <p class="shell-stat-value">@ResolveRequestHeadline()</p>
+                        <p class="shell-stat-copy">@ResolveRequestPathSummary()</p>
+                    </div>
+
+                    <div class="shell-stat-card">
+                        <p class="shell-stat-label">HTTP status</p>
+                        <p class="shell-stat-value">@ResolveStatusHeadline()</p>
+                        <p class="shell-stat-copy">@ResolveStatusCopy()</p>
+                    </div>
+                </div>
+            </div>
+        </Card>
+
+        <div class="grid gap-6 xl:grid-cols-[18rem_1fr]">
+            <aside class="hidden xl:block space-y-6">
+                <Card Class="panel-surface shell-sidebar sticky top-28 overflow-hidden p-0">
+                    <div class="border-b border-black/5 px-5 py-4 dark:border-white/10">
+                        <p class="section-kicker">Demo navigation</p>
+                        <h2 class="font-display text-xl font-semibold text-slate-900 dark:text-white">SDK feature map</h2>
+                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Flowbite-wrapped pages for each service area in the local PocketBase test stack.</p>
+                    </div>
+
+                    <Sidebar Class="border-none bg-transparent px-3 py-3 shadow-none">
+                        <SidebarItemGroup>
+                            @foreach (var item in navigationItems)
+                            {
+                                <SidebarItem Href="@item.Href" Icon="@item.Icon">
+                                    @item.Label
+                                </SidebarItem>
+                            }
+                        </SidebarItemGroup>
+
+                        <SidebarCTA>
+                            <div class="space-y-3">
+                                <p class="text-sm text-slate-700 dark:text-slate-300">Point your local PocketBase server at <span class="font-semibold">@Demo.BaseUrl</span>.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <Button Href="/health" Color="ButtonColor.Primary" Class="w-full">Ping health endpoint</Button>
+                                    <Button Href="/records" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Class="w-full">Browse public records</Button>
+                                </div>
+                            </div>
+                        </SidebarCTA>
+                    </Sidebar>
+                </Card>
+
+                <Card Class="panel-surface p-5">
+                    <p class="section-kicker">Activity</p>
+                    <h2 class="font-display text-xl font-semibold text-slate-900 dark:text-white">Request digest</h2>
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@ResolveRequestSummary()</p>
+
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <Badge Color="BadgeColor.Info">@Demo.SessionKind</Badge>
+                        @if (!string.IsNullOrWhiteSpace(Demo.CurrentEmail))
+                        {
+                            <Badge Color="BadgeColor.Gray">@Demo.CurrentEmail</Badge>
+                        }
+                        @if (Demo.LastStatusCode is not null)
+                        {
+                            <Badge Color="@ResolveStatusBadgeColor(Demo.LastStatusCode.Value)">HTTP @((int)Demo.LastStatusCode.Value)</Badge>
+                        }
+                    </div>
+                </Card>
+            </aside>
+
+            <main class="min-w-0 space-y-6">
+                <Card Class="panel-surface px-5 py-4">
+                    <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                        <Breadcrumb>
+                            <BreadcrumbItem Href="/">
+                                <HomeIcon class="mr-2 h-4 w-4" />
+                                Home
+                            </BreadcrumbItem>
+                            @if (CurrentPath == "/")
+                            {
+                                <BreadcrumbItem>Overview</BreadcrumbItem>
+                            }
+                            else
+                            {
+                                <BreadcrumbItem Href="@CurrentNavigationItem.Href">@CurrentNavigationItem.Label</BreadcrumbItem>
+                            }
+                        </Breadcrumb>
+
+                        <div class="flex flex-wrap gap-2">
+                            @if (!string.IsNullOrWhiteSpace(Demo.LastRequestPath))
+                            {
+                                <Badge Color="BadgeColor.Primary">@Demo.LastRequestMethod @Demo.LastRequestPath</Badge>
+                            }
+                            @if (Demo.LastStatusCode is not null)
+                            {
+                                <Badge Color="@ResolveStatusBadgeColor(Demo.LastStatusCode.Value)">HTTP @((int)Demo.LastStatusCode.Value)</Badge>
+                            }
+                        </div>
+                    </div>
+                </Card>
+
+                @Body
+            </main>
+        </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly NavigationItem[] navigationItems =
+    [
+        new("Overview", "/", new HomeIcon(), "Use the overview as the fastest way to scan the SDK surfaces, the current client state, and the local test target.", "Mixed public + admin"),
+        new("Health", "/health", new HeartIcon(), "Smoke-test the bundled PocketBase instance and verify the SDK can reach the local API before moving deeper.", "Public"),
+        new("Auth", "/auth", new UserIcon(), "Bootstrap admin auth, inspect collection auth methods, and see how AuthStore changes after each sign-in flow.", "Public + admin"),
+        new("Records", "/records", new FileIcon(), "Create, update, list, and delete public entry records while watching each request surface in the shell.", "Public"),
+        new("Users", "/users", new UsersIcon(), "Provision and patch auth records through the user service wrappers once an admin token is loaded.", "Admin"),
+        new("Collections", "/collections", new GridIcon(), "Inspect collection metadata and schema details for the local server without leaving the browser.", "Admin"),
+        new("Settings", "/settings", new GearIcon(), "Load settings payloads, send a patch, and exercise diagnostics calls that are useful for error-path validation.", "Admin"),
+        new("Backups", "/backups", new DatabaseIcon(), "Create, preview, and delete backup files against the local instance while keeping destructive restore out of the UI.", "Admin"),
+        new("Realtime", "/realtime", new BellIcon(), "Subscribe to entry events and verify that realtime callbacks are firing when the collection changes.", "Public")
+    ];
+    private bool isMobileNavOpen;
+
+    private string CurrentPath
+    {
+        get
+        {
+            var relativePath = Navigation.ToBaseRelativePath(Navigation.Uri);
+            var path = string.IsNullOrWhiteSpace(relativePath)
+                ? "/"
+                : "/" + relativePath.Split('?', '#')[0].Trim('/');
+
+            return string.IsNullOrWhiteSpace(path) ? "/" : path;
+        }
+    }
+
+    private NavigationItem CurrentNavigationItem =>
+        navigationItems.FirstOrDefault(item => string.Equals(item.Href, CurrentPath, StringComparison.OrdinalIgnoreCase))
+        ?? new NavigationItem("Workspace", CurrentPath, new GridIcon(), "Explore the local SDK demo surfaces from the navigation and shell controls.", "Local route");
+
+    protected override void OnInitialized()
+    {
+        Demo.Changed += HandleDemoChanged;
+        Navigation.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleDemoChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs args)
+    {
+        isMobileNavOpen = false;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OpenMobileNav()
+    {
+        isMobileNavOpen = true;
+    }
+
+    private void CloseMobileNav()
+    {
+        isMobileNavOpen = false;
+    }
+
+    private async Task ToggleThemeAsync()
+    {
+        await JS.InvokeVoidAsync("demoTheme.toggle");
+    }
+
+    private void OpenOverview()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void OpenAuth()
+    {
+        Navigation.NavigateTo("/auth");
+    }
+
+    private void OpenHealth()
+    {
+        Navigation.NavigateTo("/health");
+    }
+
+    private void HandleLogout()
+    {
+        Demo.Logout();
+        Navigation.NavigateTo("/auth");
+    }
+
+    private string ResolveProfileTitle()
+    {
+        if (!string.IsNullOrWhiteSpace(Demo.CurrentEmail))
+        {
+            return Demo.CurrentEmail;
+        }
+
+        return Demo.IsAuthenticated ? "Authenticated workspace" : "Anonymous workspace";
+    }
+
+    private string ResolveSessionSummary()
+    {
+        if (!string.IsNullOrWhiteSpace(Demo.CurrentEmail))
+        {
+            return $"Signed in as {Demo.CurrentEmail}.";
+        }
+
+        return "Public pages are ready immediately. Open Auth to unlock admin-only flows.";
+    }
+
+    private BadgeColor ResolveSessionBadgeColor()
+    {
+        if (Demo.IsAdminSession)
+        {
+            return BadgeColor.Success;
+        }
+
+        if (Demo.IsUserSession)
+        {
+            return BadgeColor.Info;
+        }
+
+        return BadgeColor.Gray;
+    }
+
+    private string ResolveAuthLabel()
+    {
+        if (Demo.IsAdminSession)
+        {
+            return "Admin token ready";
+        }
+
+        if (Demo.IsUserSession)
+        {
+            return "User token ready";
+        }
+
+        return "Anonymous";
+    }
+
+    private string ResolveSessionDotClass()
+    {
+        return Demo.IsAuthenticated
+            ? "shell-avatar-dot bg-emerald-400"
+            : "shell-avatar-dot bg-amber-400";
+    }
+
+    private string TrimBaseUrl()
+    {
+        return Demo.BaseUrl
+            .Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .TrimEnd('/');
+    }
+
+    private string ResolveRequestSummary()
+    {
+        if (string.IsNullOrWhiteSpace(Demo.LastRequestPath))
+        {
+            return "No network traffic yet. Use any page action to watch the shell update in real time.";
+        }
+
+        return $"{Demo.LastRequestMethod} {Demo.LastRequestPath}";
+    }
+
+    private string ResolveRequestHeadline()
+    {
+        return Demo.LastRequestMethod ?? "Idle";
+    }
+
+    private string ResolveRequestPathSummary()
+    {
+        return Demo.LastRequestPath ?? "No request captured yet";
+    }
+
+    private string ResolveStatusHeadline()
+    {
+        return Demo.LastStatusCode is null ? "Waiting" : $"HTTP {(int)Demo.LastStatusCode}";
+    }
+
+    private string ResolveStatusCopy()
+    {
+        return Demo.LastStatusCode?.ToString() ?? "No response observed yet";
+    }
+
+    private string ResolveNextActionTitle()
+    {
+        if (!Demo.IsAuthenticated)
+        {
+            return "Open Auth";
+        }
+
+        return CurrentPath == "/" ? "Choose a service page" : "Run the page action";
+    }
+
+    private string ResolveNextActionCopy()
+    {
+        if (!Demo.IsAuthenticated)
+        {
+            return "Load the bundled admin credentials only when you need admin-only pages.";
+        }
+
+        return CurrentPath == "/"
+            ? "Use overview search or the left navigation to jump into one SDK surface at a time."
+            : "Trigger the page's primary action and inspect the header badges plus JSON panel below.";
+    }
+
+    private static BadgeColor ResolveStatusBadgeColor(System.Net.HttpStatusCode statusCode)
+    {
+        var numeric = (int)statusCode;
+        return numeric switch
+        {
+            >= 200 and < 300 => BadgeColor.Success,
+            >= 400 and < 500 => BadgeColor.Warning,
+            >= 500 => BadgeColor.Pink,
+            _ => BadgeColor.Gray,
+        };
+    }
+
+    public void Dispose()
+    {
+        Demo.Changed -= HandleDemoChanged;
+        Navigation.LocationChanged -= HandleLocationChanged;
+    }
+
+    private sealed record NavigationItem(string Label, string Href, IconBase Icon, string Summary, string Access);
+}

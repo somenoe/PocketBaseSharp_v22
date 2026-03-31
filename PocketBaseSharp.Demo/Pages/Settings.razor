@@ -1,0 +1,184 @@
+@page "/settings"
+@inject DemoPocketBaseService Demo
+
+<PageTitle>Settings</PageTitle>
+
+<FeatureHero Title="Settings"
+             Description="Read the server settings payload, send a no-op patch, and run the SDK diagnostics wrappers. On the local PocketBase instance the diagnostic calls deliberately return validation errors, which makes them useful for verifying error handling."
+             Eyebrow="Service page" Service="SettingsService"
+             Method="GetAllAsync(), UpdateAsync(), TestS3Async(), TestEmailAsync()" Access="Admin required">
+    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Diagnostics</p>
+        <p class="mt-2 font-display text-2xl font-semibold">Happy and unhappy paths</p>
+        <p class="mt-3 text-sm text-slate-300">The repo’s live tests expect `TestS3Async` and `TestEmailAsync` to fail
+            with HTTP 400 on the bundled server, so those buttons are intentionally useful for confirming error
+            propagation.</p>
+        </div>
+    </FeatureHero>
+
+    @if (!Demo.IsAdminSession)
+    {
+        <StatusAlert Message="Open Auth and sign in as admin before calling SettingsService." IsWarning="true" />
+        <Card Class="panel-surface p-5">
+            <Button Href="/auth" Color="ButtonColor.Primary">Go to auth</Button>
+        </Card>
+    }
+    else
+    {
+        <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
+
+        <div class="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+            <div class="space-y-6">
+                <Card Class="panel-surface p-5">
+                    <p class="section-kicker">Core settings</p>
+                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Load and patch the settings
+                        payload</h2>
+
+                        <div class="mt-5 flex flex-wrap gap-3">
+                            <Button Color="ButtonColor.Primary" Loading="@(busyAction == "load")" OnClick="LoadSettingsAsync">
+                                Load settings
+                            </Button>
+                            <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "patch")"
+                                    OnClick="PatchSettingsAsync">
+                                Send empty patch
+                            </Button>
+                        </div>
+                    </Card>
+
+                    <Card Class="panel-surface p-5">
+                        <p class="section-kicker">Diagnostics</p>
+                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Run the helper endpoints</h2>
+
+                        <div class="mt-5 grid gap-4 md:grid-cols-2">
+                            <div>
+                                <div class="mb-2 block">
+                                    <Label For="test-email" Value="Email recipient" />
+                                </div>
+                                <TextInput TValue="string" Id="test-email" @bind-Value="testEmail" Type="email"
+                                           Placeholder="test@example.com" />
+                            </div>
+                            <div>
+                                <div class="mb-2 block">
+                                    <Label For="email-template" Value="Email template" />
+                                </div>
+                                <TextInput TValue="string" Id="email-template" @bind-Value="emailTemplate"
+                                           Placeholder="verification" />
+                            </div>
+                        </div>
+
+                        <div class="mt-5 flex flex-wrap gap-3">
+                            <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Dark" Loading="@(busyAction == "email")"
+                                    OnClick="RunEmailDiagnosticsAsync">
+                                Test email diagnostics
+                            </Button>
+                            <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "s3")"
+                                    OnClick="RunS3DiagnosticsAsync">
+                                Test S3 diagnostics
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+
+                <ResultCard Title="Settings payload"
+                            Description="Most recent successful settings response or a serialized error summary." Json="@resultJson"
+                            EmptyMessage="Load settings or run a diagnostic call to populate this panel." />
+            </div>
+        }
+
+@code {
+    private string testEmail = "test@example.com";
+    private string emailTemplate = "verification";
+    private string? resultJson;
+    private string? statusMessage;
+    private string? busyAction;
+    private bool isError;
+    private bool isWarning;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Demo.IsAdminSession)
+        {
+            await LoadSettingsAsync();
+        }
+    }
+
+    private async Task LoadSettingsAsync()
+    {
+        busyAction = "load";
+        var result = await Demo.Client.Settings.GetAllAsync();
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            resultJson = Demo.ToJson(result.Value);
+            SetStatus("Loaded the server settings payload.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task PatchSettingsAsync()
+    {
+        busyAction = "patch";
+        var result = await Demo.Client.Settings.UpdateAsync(new Dictionary<string, object>());
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            resultJson = Demo.ToJson(result.Value);
+            SetStatus("Sent an empty PATCH request and received the updated settings payload.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task RunEmailDiagnosticsAsync()
+    {
+        busyAction = "email";
+        var result = await Demo.Client.Settings.TestEmailAsync(testEmail, emailTemplate, new Dictionary<string, object>());
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            resultJson = Demo.ToJson(new { ok = true, endpoint = "test-email" });
+            SetStatus("Email diagnostic completed successfully.");
+            return;
+        }
+
+        SetFailure(result, "Email diagnostic failed as expected on the bundled server.");
+    }
+
+    private async Task RunS3DiagnosticsAsync()
+    {
+        busyAction = "s3";
+        var result = await Demo.Client.Settings.TestS3Async(new Dictionary<string, object>());
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            resultJson = Demo.ToJson(new { ok = true, endpoint = "test-s3" });
+            SetStatus("S3 diagnostic completed successfully.");
+            return;
+        }
+
+        SetFailure(result, "S3 diagnostic failed as expected on the bundled server.");
+    }
+
+    private void SetFailure(ResultBase result, string? prefix = null)
+    {
+        var message = Demo.Describe(result);
+        statusMessage = string.IsNullOrWhiteSpace(prefix) ? message : $"{prefix} {message}";
+        resultJson = Demo.ToJson(new { errors = result.Errors.Select(error => error.Message).ToArray() });
+        isError = true;
+        isWarning = false;
+    }
+
+    private void SetStatus(string message, bool warning = false)
+    {
+        statusMessage = message;
+        isError = false;
+        isWarning = warning;
+    }
+}

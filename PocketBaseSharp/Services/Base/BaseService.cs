@@ -1,4 +1,6 @@
 ﻿using PocketBaseSharp.Models;
+using System.Reflection;
+using System.Text.Json.Serialization;
 using System.Web;
 
 namespace PocketBaseSharp.Services.Base
@@ -20,12 +22,24 @@ namespace PocketBaseSharp.Services.Base
 
             foreach (var prop in item.GetType().GetProperties())
             {
-                if (_itemProperties.Contains(prop.Name)) continue;
+                if (_itemProperties.Contains(prop.Name) || prop.GetCustomAttribute<JsonIgnoreAttribute>() is not null)
+                {
+                    continue;
+                }
+
                 var propValue = prop.GetValue(item, null);
-                if (propValue is not null) body.Add(ToCamelCase(prop.Name), propValue);
+                if (propValue is not null)
+                {
+                    body.Add(ResolveBodyPropertyName(prop), propValue);
+                }
             }
 
             return body;
+        }
+
+        private string ResolveBodyPropertyName(PropertyInfo property)
+        {
+            return property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? ToCamelCase(property.Name);
         }
 
         private string ToCamelCase(string str)

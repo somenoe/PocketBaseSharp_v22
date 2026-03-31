@@ -3,5 +3,6 @@
     <File Path="LICENSE.txt" />
   </Folder>
   <Project Path="PocketBaseSharp .Tests/PocketBaseSharp.Tests.csproj" />
+  <Project Path="PocketBaseSharp.Demo/Demo.csproj" />
   <Project Path="PocketBaseSharp/PocketBaseSharp.csproj" />
 </Solution>

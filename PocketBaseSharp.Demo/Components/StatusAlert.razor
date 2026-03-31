@@ -1,0 +1,69 @@
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <Alert Color="@ResolveColor()" Icon="@ResolveIcon()" TextEmphasis="@ResolveTitle()" Text="@Message"
+           WithBorderAccent="true" />
+}
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public bool IsError { get; set; }
+
+    [Parameter]
+    public bool IsWarning { get; set; }
+
+    private AlertColor ResolveColor()
+    {
+        if (IsError)
+        {
+            return AlertColor.Failure;
+        }
+
+        if (IsWarning)
+        {
+            return AlertColor.Warning;
+        }
+
+        return AlertColor.Success;
+    }
+
+    private IconBase ResolveIcon()
+    {
+        if (IsError)
+        {
+            return new ExclamationTriangleIcon();
+        }
+
+        if (IsWarning)
+        {
+            return new InfoCircleIcon();
+        }
+
+        return new CheckCircleIcon();
+    }
+
+    private string ResolveTitle()
+    {
+        if (!string.IsNullOrWhiteSpace(Title))
+        {
+            return Title;
+        }
+
+        if (IsError)
+        {
+            return "Request failed";
+        }
+
+        if (IsWarning)
+        {
+            return "Heads up";
+        }
+
+        return "Request succeeded";
+    }
+}

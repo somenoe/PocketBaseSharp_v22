@@ -18,7 +18,10 @@ download-pb:
     unzip -o pocketbase.temp.zip -d PocketBase
     rm pocketbase.temp.zip
 
-setup: download-pb
+download-tw:
+    mkdir .\PocketBaseSharp.Demo\tools -Force; cd .\PocketBaseSharp.Demo\tools; Invoke-WebRequest -Uri https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.8/tailwindcss-windows-x64.exe -OutFile tailwindcss.exe -UseBasicParsing;
+
+setup: download-pb download-tw
     dotnet tool install -g dotnet-reportgenerator-globaltool
 
 build:
@@ -31,3 +34,9 @@ test-coverage:
     @if (Test-Path ./CoverageResults) { Remove-Item ./CoverageResults -Force -Recurse }
     dotnet test --collect:"XPlat Code Coverage" --results-directory ./CoverageResults
     @if (Test-Path ./CoverageResults) { reportgenerator -reports:"CoverageResults/**/*.xml" -targetdir:"CoverageResults" -reporttypes:TextSummary }
+
+demo-build:
+    dotnet publish PocketBaseSharp.Demo/Demo.csproj
+
+demo-serve:
+    dotnet serve -d PocketBaseSharp.Demo\bin\Release\net10.0\publish\wwwroot --port 3000  --fallback-file index.html

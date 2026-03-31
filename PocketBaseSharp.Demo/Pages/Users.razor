@@ -1,0 +1,277 @@
+@page "/users"
+@inject DemoPocketBaseService Demo
+
+<PageTitle>Users</PageTitle>
+
+<FeatureHero Title="Users"
+             Description="This page uses the UserService CRUD wrappers for auth records. It is intentionally admin-only because listing and patching users requires elevated access on the local PocketBase server."
+             Eyebrow="Service page" Service="UserService" Method="CreateAsync(), ListAsync(), GetOneAsync(), UpdateAsync()"
+             Access="Admin required">
+    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Admin session</p>
+        <p class="mt-2 font-display text-2xl font-semibold">@(Demo.IsAdminSession ? "Unlocked" : "Locked")</p>
+        <p class="mt-3 text-sm text-slate-300">Admin bootstrap is handled on the auth page through the legacy superuser
+            endpoint, then the SDK reuses that JWT for the user service calls here.</p>
+        </div>
+    </FeatureHero>
+
+    @if (!Demo.IsAdminSession)
+    {
+        <StatusAlert Message="Open Auth and sign in as the bundled admin before using the user management wrappers."
+                     IsWarning="true" />
+        <Card Class="panel-surface p-5">
+            <Button Href="/auth" Color="ButtonColor.Primary">Go to auth</Button>
+        </Card>
+    }
+    else
+    {
+        <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
+
+        <div class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+            <div class="space-y-6">
+                <Card Class="panel-surface p-5">
+                    <p class="section-kicker">Create</p>
+                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Provision a new auth record
+                    </h2>
+
+                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                        <div>
+                            <div class="mb-2 block">
+                                <Label For="new-user-email" Value="Email" />
+                            </div>
+                            <TextInput TValue="string" Id="new-user-email" @bind-Value="newUserEmail" Type="email"
+                                       Placeholder="sdk-user@example.com" />
+                        </div>
+                        <div>
+                            <div class="mb-2 block">
+                                <Label For="new-user-password" Value="Password" />
+                            </div>
+                            <TextInput TValue="string" Id="new-user-password" @bind-Value="newUserPassword" Type="password"
+                                       Placeholder="Password123!" />
+                        </div>
+                    </div>
+
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <Button Color="ButtonColor.Primary" Loading="@(busyAction == "create")" OnClick="CreateUserAsync">
+                            Create user
+                        </Button>
+                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
+                                OnClick="LoadUsersAsync">
+                            Reload list
+                        </Button>
+                    </div>
+                </Card>
+
+                <ResultCard Title="User payload" Description="Latest user object fetched or mutated by the page."
+                            Json="@resultJson" EmptyMessage="Create, inspect, or patch a user to populate this panel." />
+            </div>
+
+            <Card Class="panel-surface p-5">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <p class="section-kicker">Browse</p>
+                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Latest users</h2>
+                    </div>
+                    <Badge Color="BadgeColor.Gray">Loaded: @users.Count</Badge>
+                </div>
+
+                <div class="mt-5 overflow-x-auto">
+                    <Table Striped="true" Hoverable="true">
+                        <TableHead>
+                            <TableRow>
+                                <TableHeadCell>Email</TableHeadCell>
+                                <TableHeadCell>Username</TableHeadCell>
+                                <TableHeadCell>Verified</TableHeadCell>
+                                <TableHeadCell>
+                                    <span class="sr-only">Actions</span>
+                                </TableHeadCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody Class="divide-y">
+                            @if (users.Count == 0)
+                            {
+                                <TableRow>
+                                    <TableCell>No users loaded yet.</TableCell>
+                                    <TableCell>-</TableCell>
+                                    <TableCell>-</TableCell>
+                                    <TableCell>-</TableCell>
+                                </TableRow>
+                            }
+                            else
+                            {
+                                @foreach (var user in users)
+                                {
+                                    <TableRow>
+                                        <TableCell>@user.Email</TableCell>
+                                        <TableCell>@(string.IsNullOrWhiteSpace(user.UserName) ? "-" : user.UserName)</TableCell>
+                                        <TableCell>
+                                            <Badge Color="@((user.Verified ?? false) ? BadgeColor.Success : BadgeColor.Warning)">
+                                                @((user.Verified ?? false) ? "Verified" : "Pending")</Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
+                                                            Loading="@(busyAction == $"inspect:{user.Id}")"
+                                                            OnClick="@(() => InspectUserAsync(user.Id))">
+                                                        Inspect
+                                                    </Button>
+                                                    <Button Size="ButtonSize.Small" Color="ButtonColor.Primary"
+                                                            Loading="@(busyAction == $"patch:{user.Id}")"
+                                                            OnClick="@(() => PatchUserAsync(user))">
+                                                        Patch + verify
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    }
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+                </Card>
+            </div>
+        }
+
+@code {
+    private readonly List<UserModel> users = [];
+    private string newUserEmail = string.Empty;
+    private string newUserPassword = "Password123!";
+    private string? resultJson;
+    private string? statusMessage;
+    private string? busyAction;
+    private bool isError;
+    private bool isWarning;
+
+    protected override async Task OnInitializedAsync()
+    {
+        newUserEmail = BuildUserEmail();
+
+        if (Demo.IsAdminSession)
+        {
+            await LoadUsersAsync();
+        }
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        await LoadUsersAsync(null);
+    }
+
+    private async Task LoadUsersAsync(string? successMessage)
+    {
+        busyAction = "load";
+        var result = await Demo.Client.User.ListAsync(page: 1, perPage: 25, sort: "-created");
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            users.Clear();
+            users.AddRange(result.Value.Items ?? []);
+            if (string.IsNullOrWhiteSpace(resultJson))
+            {
+                resultJson = Demo.ToJson(result.Value.Items);
+            }
+            SetStatus(successMessage ?? $"Loaded {users.Count} users.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task CreateUserAsync()
+    {
+        busyAction = "create";
+        var requestedEmail = newUserEmail;
+        var result = await Demo.Client.User.CreateAsync(requestedEmail, newUserPassword, newUserPassword);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            resultJson = Demo.ToJson(result.Value);
+            newUserEmail = BuildUserEmail();
+            await LoadUsersAsync($"Created user {ResolveUserLabel(result.Value, requestedEmail)}.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task InspectUserAsync(string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return;
+        }
+
+        busyAction = $"inspect:{id}";
+        var result = await Demo.Client.User.GetOneAsync(id);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            resultJson = Demo.ToJson(result.Value);
+            SetStatus($"Fetched user {ResolveUserLabel(result.Value, id)}.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task PatchUserAsync(UserModel user)
+    {
+        if (string.IsNullOrWhiteSpace(user.Id))
+        {
+            return;
+        }
+
+        busyAction = $"patch:{user.Id}";
+        var updatedName = string.IsNullOrWhiteSpace(user.UserName)
+            ? $"demo-{Guid.NewGuid().ToString("N")[..6]}"
+            : $"{user.UserName}-demo";
+        var result = await Demo.Client.User.UpdateAsync(user.Id, username: updatedName, verified: true);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            resultJson = Demo.ToJson(result.Value);
+            await LoadUsersAsync($"Updated user {ResolveUserLabel(result.Value, user.Email ?? user.Id)} and marked the account verified.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private void SetFailure(ResultBase result)
+    {
+        statusMessage = Demo.Describe(result);
+        isError = true;
+        isWarning = false;
+    }
+
+    private void SetStatus(string message, bool warning = false)
+    {
+        statusMessage = message;
+        isError = false;
+        isWarning = warning;
+    }
+
+    private static string BuildUserEmail()
+    {
+        return $"sdk-user-{Guid.NewGuid().ToString("N")[..8]}@example.com";
+    }
+
+    private static string ResolveUserLabel(UserModel user, string? fallback = null)
+    {
+        if (!string.IsNullOrWhiteSpace(user.Email))
+        {
+            return user.Email;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.UserName))
+        {
+            return user.UserName;
+        }
+
+        return fallback ?? user.Id ?? "user";
+    }
+}

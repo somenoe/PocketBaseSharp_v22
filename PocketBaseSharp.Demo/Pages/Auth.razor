@@ -1,0 +1,318 @@
+@page "/auth"
+@inject DemoPocketBaseService Demo
+
+<PageTitle>Auth</PageTitle>
+
+<FeatureHero Title="Authentication"
+             Description="This page exercises the SDK auth surfaces that make sense against the bundled PocketBase server: collection auth methods, user registration/login, manual admin bootstrap, and AuthStore inspection."
+             Eyebrow="Service page" Service="UserService + AuthStore"
+             Method="GetAuthenticationMethodsAsync(), AuthenticateWithPasswordAsync()" Access="Public + admin">
+    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Current session</p>
+        <p class="mt-2 font-display text-2xl font-semibold">@Demo.SessionKind</p>
+        <p class="mt-3 text-sm text-slate-300">PocketBase v0.22 still accepts the legacy <span
+            class="font-semibold text-white">/api/admins/auth-with-password</span> endpoint, so the demo uses that
+            to unlock the other admin-only service pages.</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+                @if (!string.IsNullOrWhiteSpace(Demo.CurrentEmail))
+                {
+                    <Badge Color="BadgeColor.Success">@Demo.CurrentEmail</Badge>
+                }
+                @if (!string.IsNullOrWhiteSpace(Demo.TokenPreview))
+                {
+                    <Badge Color="BadgeColor.Gray">@Demo.TokenPreview</Badge>
+                }
+            </div>
+        </div>
+    </FeatureHero>
+
+    <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
+
+    <div class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <div class="space-y-6">
+            <Card Class="panel-surface p-5">
+                <p class="section-kicker">Admin bootstrap</p>
+                <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Legacy superuser sign-in</h2>
+                <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">These credentials ship with the local PocketBase
+                    data in this repo. The SDK stores the returned token in AuthStore so collection, settings, backup, and
+                    user admin calls can reuse it automatically.</p>
+
+                    <div class="mt-5 grid gap-4 md:grid-cols-2">
+                        <div>
+                            <div class="mb-2 block">
+                                <Label For="admin-email" Value="Admin email" />
+                            </div>
+                            <TextInput TValue="string" Id="admin-email" @bind-Value="adminEmail" Type="email"
+                                       Placeholder="admin@admin.com" />
+                        </div>
+                        <div>
+                            <div class="mb-2 block">
+                                <Label For="admin-password" Value="Admin password" />
+                            </div>
+                            <TextInput TValue="string" Id="admin-password" @bind-Value="adminPassword" Type="password"
+                                       Placeholder="demo123456" />
+                        </div>
+                    </div>
+
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <Button Color="ButtonColor.Primary" Loading="@(busyAction == "admin")" OnClick="LoginAdminAsync">
+                            Sign in as admin
+                        </Button>
+                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" OnClick="ResetAdminDefaults">
+                            Reset defaults
+                        </Button>
+                    </div>
+                </Card>
+
+                <Card Class="panel-surface p-5">
+                    <p class="section-kicker">Collection auth</p>
+                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Create and sign in a user
+                    </h2>
+                    <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">This uses the user collection wrappers directly
+                        from the SDK. Generate a throwaway account, then sign in as that user to exercise refresh and
+                        current-user flows.</p>
+
+                        <div class="mt-5 grid gap-4 md:grid-cols-2">
+                            <div>
+                                <div class="mb-2 block">
+                                    <Label For="user-email" Value="User email" />
+                                </div>
+                                <TextInput TValue="string" Id="user-email" @bind-Value="userEmail" Type="email"
+                                           Placeholder="sdk-demo@example.com" />
+                            </div>
+                            <div>
+                                <div class="mb-2 block">
+                                    <Label For="user-password" Value="Password" />
+                                </div>
+                                <TextInput TValue="string" Id="user-password" @bind-Value="userPassword" Type="password"
+                                           Placeholder="Password123!" />
+                            </div>
+                        </div>
+
+                        <div class="mt-5 flex flex-wrap gap-3">
+                            <Button Color="ButtonColor.Primary" Loading="@(busyAction == "register")" OnClick="RegisterUserAsync">
+                                Create user
+                            </Button>
+                            <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Dark" Loading="@(busyAction == "user-login")"
+                                    OnClick="LoginUserAsync">
+                                Sign in as user
+                            </Button>
+                            <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "refresh")"
+                                    OnClick="RefreshUserAsync">
+                                Refresh user token
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+
+                <div class="space-y-6">
+                    <Card Class="panel-surface p-5">
+                        <p class="section-kicker">Discovery</p>
+                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Available auth methods</h2>
+                        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">The SDK exposes the collection auth metadata so
+                            you can inspect which login methods are currently enabled.</p>
+
+                            <div class="mt-5 flex flex-wrap gap-3">
+                                <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "methods")"
+                                        OnClick="LoadAuthMethodsAsync">
+                                    Reload auth methods
+                                </Button>
+                                @if (authMethods?.EmailPassword == true)
+                                {
+                                    <Badge Color="BadgeColor.Success">Email/password enabled</Badge>
+                                }
+                                @if (authMethods?.UsernamePassword == true)
+                                {
+                                    <Badge Color="BadgeColor.Info">Username/password enabled</Badge>
+                                }
+                                <Badge Color="BadgeColor.Gray">Providers: @(authMethods?.AuthProviders?.Count() ?? 0)</Badge>
+                            </div>
+                        </Card>
+
+                        <Card Class="panel-surface p-5">
+                            <p class="section-kicker">AuthStore</p>
+                            <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">In-memory session snapshot
+                            </h2>
+
+                            <dl class="mt-5 grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Kind</dt>
+                                    <dd class="mt-1 text-slate-900 dark:text-white">@Demo.SessionKind</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Current email
+                                    </dt>
+                                    <dd class="mt-1 text-slate-900 dark:text-white">@(Demo.CurrentEmail ?? "Not signed in")</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Current id</dt>
+                                    <dd class="mt-1 break-all text-slate-900 dark:text-white">@(Demo.CurrentId ?? "-")</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Token preview
+                                    </dt>
+                                    <dd class="mt-1 break-all text-slate-900 dark:text-white">@(Demo.TokenPreview ?? "-")</dd>
+                                </div>
+                            </dl>
+
+                            <div class="mt-5 flex flex-wrap gap-3">
+                                <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" OnClick="HandleLogout"
+                                        Disabled="@(!Demo.IsAuthenticated)">
+                                    Clear AuthStore
+                                </Button>
+                            </div>
+                        </Card>
+
+                        <ResultCard Title="Latest auth payload"
+                                    Description="The most recent successful auth-related result or the current AuthStore model."
+                                    Json="@authJson" EmptyMessage="Create a user, sign in, or reload auth methods to populate this panel." />
+                    </div>
+                </div>
+
+@code {
+    private string adminEmail = DemoPocketBaseService.DefaultAdminEmail;
+    private string adminPassword = DemoPocketBaseService.DefaultAdminPassword;
+    private string userEmail = string.Empty;
+    private string userPassword = "Password123!";
+    private AuthMethodsList? authMethods;
+    private string? authJson;
+    private string? statusMessage;
+    private string? busyAction;
+    private bool isError;
+    private bool isWarning;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEmail = BuildUserEmail();
+        await LoadAuthMethodsAsync();
+    }
+
+    private async Task LoadAuthMethodsAsync()
+    {
+        busyAction = "methods";
+        var result = await Demo.Client.User.GetAuthenticationMethodsAsync();
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            authMethods = result.Value;
+            authJson = Demo.ToJson(result.Value);
+            SetStatus("Loaded the available collection auth methods.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task LoginAdminAsync()
+    {
+        busyAction = "admin";
+        var result = await Demo.SignInAsAdminAsync(adminEmail, adminPassword);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            authJson = Demo.ToJson(result.Value);
+            SetStatus("Signed in using the legacy admin endpoint and stored the token in AuthStore.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task RegisterUserAsync()
+    {
+        busyAction = "register";
+        var result = await Demo.Client.User.CreateAsync(userEmail, userPassword, userPassword);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            authJson = Demo.ToJson(result.Value);
+            var createdEmail = string.IsNullOrWhiteSpace(result.Value.Email) ? userEmail : result.Value.Email;
+            SetStatus($"Created user {createdEmail}. You can sign in immediately with the same credentials.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task LoginUserAsync()
+    {
+        busyAction = "user-login";
+        var result = await Demo.Client.User.AuthenticateWithPasswordAsync(userEmail, userPassword);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            authJson = Demo.ToJson(result.Value);
+            SetStatus("Signed in as a collection user through UserService.AuthenticateWithPasswordAsync().");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task RefreshUserAsync()
+    {
+        if (!Demo.IsUserSession)
+        {
+            statusMessage = "Refresh is demonstrated only for user sessions because the bundled PocketBase server uses a legacy admin auth endpoint.";
+            isWarning = true;
+            isError = false;
+            return;
+        }
+
+        busyAction = "refresh";
+        var result = await Demo.Client.User.RefreshAsync();
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            authJson = Demo.ToJson(result.Value);
+            SetStatus("Refreshed the user token and updated AuthStore.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private void HandleLogout()
+    {
+        Demo.Logout();
+        authJson = Demo.ToJson(new
+        {
+            Demo.SessionKind,
+            Demo.CurrentEmail,
+            Demo.CurrentId,
+            Demo.TokenPreview,
+        });
+        SetStatus("Cleared the in-memory AuthStore.");
+    }
+
+    private void ResetAdminDefaults()
+    {
+        adminEmail = DemoPocketBaseService.DefaultAdminEmail;
+        adminPassword = DemoPocketBaseService.DefaultAdminPassword;
+        SetStatus("Restored the bundled admin defaults.", warning: true);
+    }
+
+    private void SetFailure(ResultBase result)
+    {
+        statusMessage = Demo.Describe(result);
+        isError = true;
+        isWarning = false;
+    }
+
+    private void SetStatus(string message, bool warning = false)
+    {
+        statusMessage = message;
+        isError = false;
+        isWarning = warning;
+    }
+
+    private static string BuildUserEmail()
+    {
+        return $"flowbite-demo-{Guid.NewGuid().ToString("N")[..8]}@example.com";
+    }
+}

@@ -6,6 +6,7 @@ using PocketBaseSharp.Models.Collection;
 using PocketBaseSharp.Tests.TestInfrastructure;
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace PocketBaseSharp.Tests
 {
@@ -198,6 +199,54 @@ namespace PocketBaseSharp.Tests
         }
 
         [TestMethod]
+        public async Task Record_sync_crud_respects_json_property_names_for_pascal_case_models()
+        {
+            var handler = new RecordingHttpMessageHandler();
+            handler.QueueResponse(HttpStatusCode.OK, new { id = "record-1", display_name = "Created", is_done = true, Todo_Id = new[] { "todo-1" } });
+            handler.QueueResponse(HttpStatusCode.OK, new { id = "record-1", display_name = "Updated", is_done = false });
+
+            var client = TestPocketBaseFactory.CreateClient(handler);
+            var records = client.Collection("entry");
+
+            var createResult = records.Create(new AttributedRecord
+            {
+                DisplayName = "Created",
+                IsDone = true,
+                TodoId = "todo-1",
+                Ignored = "ignore-me",
+            });
+            var updateResult = records.Update(new AttributedRecord
+            {
+                Id = "record-1",
+                DisplayName = "Updated",
+                IsDone = false,
+            });
+
+            createResult.IsSuccess.Should().BeTrue();
+            updateResult.IsSuccess.Should().BeTrue();
+            createResult.Value.DisplayName.Should().Be("Created");
+            createResult.Value.IsDone.Should().BeTrue();
+            createResult.Value.TodoId.Should().Be("todo-1");
+
+            using (var createBody = await TestPocketBaseFactory.ReadJsonAsync(handler.Requests[0].Content))
+            {
+                createBody.RootElement.GetProperty("display_name").GetString().Should().Be("Created");
+                createBody.RootElement.GetProperty("is_done").GetBoolean().Should().BeTrue();
+                createBody.RootElement.GetProperty("Todo_Id")[0].GetString().Should().Be("todo-1");
+                createBody.RootElement.TryGetProperty("displayName", out _).Should().BeFalse();
+                createBody.RootElement.TryGetProperty("todoId", out _).Should().BeFalse();
+                createBody.RootElement.TryGetProperty("ignored", out _).Should().BeFalse();
+            }
+
+            using (var updateBody = await TestPocketBaseFactory.ReadJsonAsync(handler.Requests[1].Content))
+            {
+                updateBody.RootElement.GetProperty("display_name").GetString().Should().Be("Updated");
+                updateBody.RootElement.GetProperty("is_done").GetBoolean().Should().BeFalse();
+                updateBody.RootElement.TryGetProperty("Todo_Id", out _).Should().BeFalse();
+            }
+        }
+
+        [TestMethod]
         public async Task Backup_sync_methods_and_download_token_failure_send_expected_requests()
         {
             var handler = new RecordingHttpMessageHandler();
@@ -314,6 +363,28 @@ namespace PocketBaseSharp.Tests
             public string? name { get; set; }
 
             public bool? is_done { get; set; }
+        }
+
+        private sealed class AttributedRecord : BaseModel
+        {
+            [JsonPropertyName("display_name")]
+            public string? DisplayName { get; set; }
+
+            [JsonPropertyName("is_done")]
+            public bool? IsDone { get; set; }
+
+            [JsonPropertyName("Todo_Id")]
+            public List<string>? TodoIds { get; set; }
+
+            [JsonIgnore]
+            public string? TodoId
+            {
+                get => TodoIds is { Count: > 0 } todoIds ? todoIds[0] : null;
+                set => TodoIds = string.IsNullOrWhiteSpace(value) ? null : [value];
+            }
+
+            [JsonIgnore]
+            public string? Ignored { get; set; }
         }
     }
 }

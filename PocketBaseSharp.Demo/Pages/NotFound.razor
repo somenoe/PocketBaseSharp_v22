@@ -1,0 +1,16 @@
+﻿@page "/not-found"
+@layout MainLayout
+
+<PageTitle>Not Found</PageTitle>
+
+<Card Class="panel-surface mx-auto max-w-2xl p-5 text-center">
+    <p class="section-kicker">404</p>
+    <h1 class="font-display text-4xl font-semibold text-slate-900 dark:text-white">That feature page doesn’t exist.</h1>
+    <p class="mt-4 text-base text-slate-600 dark:text-slate-300">Use the overview page to jump back into one of the SDK
+        demos.</p>
+
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+            <Button Href="/" Color="ButtonColor.Primary">Go to overview</Button>
+            <Button Href="/auth" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray">Open auth</Button>
+        </div>
+    </Card>

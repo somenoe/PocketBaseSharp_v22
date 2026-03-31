@@ -1,0 +1,216 @@
+@page "/realtime"
+@implements IAsyncDisposable
+@inject DemoPocketBaseService Demo
+
+<PageTitle>Realtime</PageTitle>
+
+<FeatureHero Title="Realtime"
+             Description="Subscribe to entry collection events and create a record to watch the Server-Sent Events callback fire through RealTimeService."
+             Eyebrow="Service page" Service="RealTimeService" Method="SubscribeAsync(), UnsubscribeByTopicAndListenerAsync()"
+             Access="Public topic: entry">
+    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Subscription</p>
+        <div class="mt-3 flex items-center gap-3">
+            <span class="font-display text-2xl font-semibold">@(isSubscribed ? "Live" : "Idle")</span>
+            <Badge Color="@(isSubscribed ? BadgeColor.Success : BadgeColor.Gray)">@(isSubscribed ? "Subscribed to entry" :
+                         "Not subscribed")</Badge>
+            </div>
+            <p class="mt-3 text-sm text-slate-300">The page uses the same topic string as the live integration tests: <span
+                class="font-semibold text-white">entry</span>.</p>
+            </div>
+        </FeatureHero>
+
+        <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
+
+        <div class="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+            <div class="space-y-6">
+                <Card Class="panel-surface p-5">
+                    <p class="section-kicker">Controls</p>
+                    <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Open the event stream</h2>
+
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <Button Color="ButtonColor.Primary" Loading="@(busyAction == "subscribe")" OnClick="SubscribeAsync"
+                                Disabled="@isSubscribed">
+                            Subscribe
+                        </Button>
+                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
+                                Loading="@(busyAction == "unsubscribe")" OnClick="UnsubscribeAsync" Disabled="@(!isSubscribed)">
+                            Unsubscribe
+                        </Button>
+                    </div>
+
+                    <div class="mt-6 space-y-4">
+                        <div>
+                            <div class="mb-2 block">
+                                <Label For="realtime-name" Value="Demo entry name" />
+                            </div>
+                            <TextInput TValue="string" Id="realtime-name" @bind-Value="draftName" Placeholder="realtime-demo" />
+                        </div>
+
+                        <ToggleSwitch @bind-Checked="draftDone" Label="Create as completed" />
+                    </div>
+
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Dark" Loading="@(busyAction == "create")"
+                                OnClick="CreateDemoRecordAsync">
+                            Create entry and trigger event
+                        </Button>
+                    </div>
+                </Card>
+
+                <ResultCard Title="Latest realtime payload" Description="The most recent SseMessage received by the callback."
+                            Json="@resultJson" EmptyMessage="Subscribe and create a record to populate the event payload." />
+            </div>
+
+            <Card Class="panel-surface p-5">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <p class="section-kicker">Event log</p>
+                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Recent SSE messages</h2>
+                    </div>
+                    <Badge Color="BadgeColor.Gray">Captured: @events.Count</Badge>
+                </div>
+
+                <div class="mt-5 overflow-x-auto">
+                    <Table Striped="true" Hoverable="true">
+                        <TableHead>
+                            <TableRow>
+                                <TableHeadCell>Received</TableHeadCell>
+                                <TableHeadCell>Event</TableHeadCell>
+                                <TableHeadCell>Message id</TableHeadCell>
+                                <TableHeadCell>Data</TableHeadCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody Class="divide-y">
+                            @if (events.Count == 0)
+                            {
+                                <TableRow>
+                                    <TableCell>Waiting for events.</TableCell>
+                                    <TableCell>-</TableCell>
+                                    <TableCell>-</TableCell>
+                                    <TableCell>Subscribe first, then create an entry.</TableCell>
+                                </TableRow>
+                            }
+                            else
+                            {
+                                @foreach (var item in events)
+                                {
+                                    <TableRow>
+                                        <TableCell>@item.ReceivedAt.ToLocalTime().ToString("HH:mm:ss")</TableCell>
+                                        <TableCell>@item.Event</TableCell>
+                                        <TableCell>@item.Id</TableCell>
+                                        <TableCell>@item.Data</TableCell>
+                                    </TableRow>
+                                }
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+            </Card>
+        </div>
+
+@code {
+    private readonly List<RealtimeEvent> events = [];
+    private Func<SseMessage, Task>? listener;
+    private string draftName = $"realtime-demo-{DateTimeOffset.UtcNow:HHmmss}";
+    private bool draftDone;
+    private string? resultJson;
+    private string? statusMessage;
+    private string? busyAction;
+    private bool isSubscribed;
+    private bool isError;
+    private bool isWarning;
+
+    private async Task SubscribeAsync()
+    {
+        listener ??= HandleRealtimeMessageAsync;
+        busyAction = "subscribe";
+        await Demo.Client.RealTime.SubscribeAsync("entry", listener);
+        busyAction = null;
+        isSubscribed = true;
+        SetStatus("Subscribed to the entry realtime topic.");
+    }
+
+    private async Task UnsubscribeAsync()
+    {
+        if (listener is null)
+        {
+            return;
+        }
+
+        busyAction = "unsubscribe";
+        await Demo.Client.RealTime.UnsubscribeByTopicAndListenerAsync("entry", listener);
+        busyAction = null;
+        isSubscribed = false;
+        SetStatus("Unsubscribed from the entry realtime topic.", warning: true);
+    }
+
+    private async Task CreateDemoRecordAsync()
+    {
+        busyAction = "create";
+        var result = await Demo.Client.Collection("entry").CreateAsync(new EntryRecord
+        {
+            Name = draftName,
+            IsDone = draftDone,
+        });
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            resultJson = Demo.ToJson(result.Value);
+            draftName = $"realtime-demo-{DateTimeOffset.UtcNow:HHmmss}";
+            draftDone = false;
+            SetStatus("Created an entry. If you are subscribed, the callback should fire immediately.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private Task HandleRealtimeMessageAsync(SseMessage message)
+    {
+        return InvokeAsync(() =>
+        {
+            events.Insert(0, new RealtimeEvent(DateTimeOffset.Now, message.Event ?? "unknown", message.Id ?? "-", message.Data ??
+string.Empty));
+            if (events.Count > 12)
+            {
+                events.RemoveAt(events.Count - 1);
+            }
+
+            resultJson = Demo.ToJson(new
+            {
+                message.Id,
+                message.Event,
+                message.Data,
+                message.Retry,
+            });
+            SetStatus($"Received realtime event '{message.Event}'.");
+            StateHasChanged();
+        });
+    }
+
+    private void SetFailure(ResultBase result)
+    {
+        statusMessage = Demo.Describe(result);
+        isError = true;
+        isWarning = false;
+    }
+
+    private void SetStatus(string message, bool warning = false)
+    {
+        statusMessage = message;
+        isError = false;
+        isWarning = warning;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (listener is not null)
+        {
+            await Demo.Client.RealTime.UnsubscribeByTopicAndListenerAsync("entry", listener);
+        }
+    }
+
+    private sealed record RealtimeEvent(DateTimeOffset ReceivedAt, string Event, string Id, string Data);
+}

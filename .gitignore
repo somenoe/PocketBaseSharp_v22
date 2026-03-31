@@ -382,3 +382,10 @@ temp_pb_data/
 
 # Code coverage results
 CoverageResults
+
+# Tailwind CLI
+PocketBaseSharp.Demo/tools/tailwindcss.exe
+
+# Playwright test results
+playwright-report/
+.playwright-cli/

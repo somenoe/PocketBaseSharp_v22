@@ -1,0 +1,329 @@
+@page "/records"
+@inject DemoPocketBaseService Demo
+
+<PageTitle>Records</PageTitle>
+
+<FeatureHero Title="Entry Records"
+             Description="This page focuses on RecordService over the public entry collection. Create, list, update, and delete records while watching the request path update in the shell header."
+             Eyebrow="Service page" Service="RecordService" Method="ListAsync(), CreateAsync(), UpdateAsync()"
+             Access="Public collection: entry">
+    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Collection</p>
+        <p class="mt-2 font-display text-2xl font-semibold">entry</p>
+        <p class="mt-3 text-sm text-slate-300">The repo migrations open CRUD rules for this collection, so you can
+            exercise the SDK here without signing in first.</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+                <Badge Color="BadgeColor.Success">Public</Badge>
+                <Badge Color="BadgeColor.Gray">Items loaded: @entries.Count</Badge>
+            </div>
+        </div>
+    </FeatureHero>
+
+    <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
+
+    <div class="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+        <div class="space-y-6">
+            <Card Class="panel-surface p-5">
+                <p class="section-kicker">Create</p>
+                <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Insert a new entry</h2>
+
+                <div class="mt-5 space-y-4">
+                    <div>
+                        <div class="mb-2 block">
+                            <Label For="create-name" Value="Name" />
+                        </div>
+                        <TextInput TValue="string" Id="create-name" @bind-Value="createName" Placeholder="flowbite entry" />
+                    </div>
+
+                    <ToggleSwitch @bind-Checked="createDone" Label="Mark as completed" />
+                </div>
+
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <Button Color="ButtonColor.Primary" Loading="@(busyAction == "create")" OnClick="CreateEntryAsync">
+                        Create entry
+                    </Button>
+                    <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" Loading="@(busyAction == "load")"
+                            OnClick="LoadEntriesAsync">
+                        Reload list
+                    </Button>
+                </div>
+            </Card>
+
+            <Card Class="panel-surface p-5">
+                <p class="section-kicker">Edit</p>
+                <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Patch the selected entry</h2>
+
+                <div class="mt-5 space-y-4">
+                    <div>
+                        <div class="mb-2 block">
+                            <Label For="edit-id" Value="Selected id" />
+                        </div>
+                        <TextInput TValue="string" Id="edit-id" @bind-Value="EditorId" Disabled="true"
+                                   Placeholder="Select a row from the table" />
+                    </div>
+
+                    <div>
+                        <div class="mb-2 block">
+                            <Label For="edit-name" Value="Name" />
+                        </div>
+                        <TextInput TValue="string" Id="edit-name" @bind-Value="editor.Name"
+                                   Disabled="@string.IsNullOrWhiteSpace(editor.Id)" Placeholder="Updated entry name" />
+                    </div>
+
+                    <ToggleSwitch @bind-Checked="editorIsDone" Label="Completed" />
+                </div>
+
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <Button Color="ButtonColor.Primary" Loading="@(busyAction == "save")" OnClick="SaveEntryAsync"
+                            Disabled="@string.IsNullOrWhiteSpace(editor.Id)">
+                        Save changes
+                    </Button>
+                    <Button Variant="ButtonVariant.Outline" Color="ButtonColor.Gray" OnClick="ClearEditor">
+                        Clear editor
+                    </Button>
+                </div>
+            </Card>
+        </div>
+
+        <div class="space-y-6">
+            <Card Class="panel-surface p-5">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <p class="section-kicker">Browse</p>
+                        <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Latest entry records
+                        </h2>
+                    </div>
+
+                    <div class="w-full max-w-md">
+                        <div class="mb-2 block">
+                            <Label For="record-filter" Value="PocketBase filter expression" />
+                        </div>
+                        <TextInput TValue="string" Id="record-filter" @bind-Value="filterExpression" Placeholder="name ~ \"
+                                   demo\"" />
+                    </div>
+                </div>
+
+                <div class="mt-5 overflow-x-auto">
+                    <Table Striped="true" Hoverable="true">
+                        <TableHead>
+                            <TableRow>
+                                <TableHeadCell>Name</TableHeadCell>
+                                <TableHeadCell>Status</TableHeadCell>
+                                <TableHeadCell>Updated</TableHeadCell>
+                                <TableHeadCell>
+                                    <span class="sr-only">Actions</span>
+                                </TableHeadCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody Class="divide-y">
+                            @if (entries.Count == 0)
+                            {
+                                <TableRow>
+                                    <TableCell>No records matched the current filter.</TableCell>
+                                    <TableCell>-</TableCell>
+                                    <TableCell>-</TableCell>
+                                    <TableCell>-</TableCell>
+                                </TableRow>
+                            }
+                            else
+                            {
+                                @foreach (var entry in entries)
+                                {
+                                    <TableRow>
+                                        <TableCell>@entry.Name</TableCell>
+                                        <TableCell>
+                                            <Badge Color="@((entry.IsDone ?? false) ? BadgeColor.Success : BadgeColor.Warning)">
+                                                @((entry.IsDone ?? false) ? "Done" : "Open")</Badge>
+                                            </TableCell>
+                                            <TableCell>@entry.Updated?.ToLocalTime().ToString("g")</TableCell>
+                                            <TableCell>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline"
+                                                            Color="ButtonColor.Gray" OnClick="@(() => SelectEntry(entry))">
+                                                        Edit
+                                                    </Button>
+                                                    <Button Size="ButtonSize.Small" Color="ButtonColor.Red"
+                                                            Loading="@(busyAction == $"delete:{entry.Id}")"
+                                                            OnClick="@(() => DeleteEntryAsync(entry.Id))">
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    }
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+                </Card>
+
+                <ResultCard Title="Record payload" Description="The latest list or record payload returned by the SDK."
+                            Json="@recordsJson" EmptyMessage="Load the collection or create a record to populate the inspector." />
+            </div>
+        </div>
+
+@code {
+    private readonly List<EntryRecord> entries = [];
+    private EntryRecord editor = new();
+    private string createName = $"flowbite-entry-{DateTimeOffset.UtcNow:HHmmss}";
+    private bool createDone;
+    private string filterExpression = string.Empty;
+    private string? recordsJson;
+    private string? statusMessage;
+    private string? busyAction;
+    private bool isError;
+    private bool isWarning;
+
+    private bool editorIsDone
+    {
+        get => editor.IsDone ?? false;
+        set => editor.IsDone = value;
+    }
+
+    private string EditorId
+    {
+        get => editor.Id ?? string.Empty;
+        set { }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEntriesAsync();
+    }
+
+    private async Task LoadEntriesAsync()
+    {
+        await LoadEntriesAsync(null);
+    }
+
+    private async Task LoadEntriesAsync(string? successMessage)
+    {
+        busyAction = "load";
+        var result = await Demo.Client.Collection("entry").ListAsync<EntryRecord>(
+            page: 1,
+            perPage: 50,
+            filter: string.IsNullOrWhiteSpace(filterExpression) ? null : filterExpression,
+            sort: "-updated");
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            entries.Clear();
+            entries.AddRange(result.Value.Items ?? []);
+            recordsJson = Demo.ToJson(result.Value.Items);
+            if (successMessage is not null)
+            {
+                SetStatus(successMessage);
+            }
+            else
+            {
+                SetStatus($"Loaded {entries.Count} entry records.");
+            }
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task CreateEntryAsync()
+    {
+        busyAction = "create";
+        var result = await Demo.Client.Collection("entry").CreateAsync(new EntryRecord
+        {
+            Name = createName,
+            IsDone = createDone,
+        });
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            createName = $"flowbite-entry-{DateTimeOffset.UtcNow:HHmmss}";
+            createDone = false;
+            recordsJson = Demo.ToJson(result.Value);
+            await LoadEntriesAsync($"Created entry {result.Value.Id}.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private void SelectEntry(EntryRecord entry)
+    {
+        editor = new EntryRecord
+        {
+            Id = entry.Id,
+            Name = entry.Name,
+            IsDone = entry.IsDone,
+            TodoId = entry.TodoId,
+        };
+        recordsJson = Demo.ToJson(entry);
+        SetStatus($"Loaded {entry.Id} into the editor.", warning: true);
+    }
+
+    private async Task SaveEntryAsync()
+    {
+        if (string.IsNullOrWhiteSpace(editor.Id))
+        {
+            SetStatus("Select an entry first.", warning: true);
+            return;
+        }
+
+        busyAction = "save";
+        var result = await Demo.Client.Collection("entry").UpdateAsync(editor);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            recordsJson = Demo.ToJson(result.Value);
+            await LoadEntriesAsync($"Updated entry {result.Value.Id}.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private async Task DeleteEntryAsync(string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return;
+        }
+
+        busyAction = $"delete:{id}";
+        var result = await Demo.Client.SendAsync($"/api/collections/entry/records/{id}", HttpMethod.Delete);
+        busyAction = null;
+
+        if (result.IsSuccess)
+        {
+            if (editor.Id == id)
+            {
+                editor = new EntryRecord();
+            }
+
+            await LoadEntriesAsync($"Deleted entry {id}.");
+            return;
+        }
+
+        SetFailure(result);
+    }
+
+    private void ClearEditor()
+    {
+        editor = new EntryRecord();
+        SetStatus("Cleared the editor.", warning: true);
+    }
+
+    private void SetFailure(ResultBase result)
+    {
+        statusMessage = Demo.Describe(result);
+        isError = true;
+        isWarning = false;
+    }
+
+    private void SetStatus(string message, bool warning = false)
+    {
+        statusMessage = message;
+        isError = false;
+        isWarning = warning;
+    }
+}
