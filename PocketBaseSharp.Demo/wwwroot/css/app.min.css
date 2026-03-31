@@ -720,11 +720,6 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
-  .lg\:grid-cols-\[1\.15fr_0\.85fr\] {
-    @media (width >= 64rem) {
-      grid-template-columns: 1.15fr 0.85fr;
-    }
-  }
   .lg\:flex-row {
     @media (width >= 64rem) {
       flex-direction: row;
@@ -778,16 +773,6 @@
   .xl\:grid-cols-\[0\.95fr_1\.05fr\] {
     @media (width >= 80rem) {
       grid-template-columns: 0.95fr 1.05fr;
-    }
-  }
-  .xl\:grid-cols-\[1\.15fr_0\.85fr\] {
-    @media (width >= 80rem) {
-      grid-template-columns: 1.15fr 0.85fr;
-    }
-  }
-  .xl\:grid-cols-\[18rem_1fr\] {
-    @media (width >= 80rem) {
-      grid-template-columns: 18rem 1fr;
     }
   }
   .\32 xl\:grid-cols-3 {
@@ -909,6 +894,27 @@ html.dark .panel-surface {
   border-color: rgba(255, 255, 255, 0.62);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.76)), linear-gradient(135deg, rgba(251, 146, 60, 0.12), rgba(56, 189, 248, 0.08));
 }
+.shell-command-grid > *, .shell-body-grid > *, .auth-workspace-grid > * {
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .shell-command-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+}
+@media (min-width: 1280px) {
+  .shell-body-grid {
+    grid-template-columns: 20rem minmax(0, 1fr);
+  }
+  .auth-workspace-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+}
+@media (min-width: 1536px) {
+  .shell-body-grid {
+    grid-template-columns: 21rem minmax(0, 1fr);
+  }
+}
 html.dark .shell-command-center {
   border-color: rgba(255, 255, 255, 0.1);
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.86)), linear-gradient(135deg, rgba(251, 146, 60, 0.12), rgba(56, 189, 248, 0.08));
@@ -940,7 +946,12 @@ html.dark .shell-avatar-dot {
   border-color: #020617;
 }
 .shell-sidebar {
+  width: 100%;
+  min-width: 0;
   box-shadow: 0 28px 80px -44px rgba(15, 23, 42, 0.35);
+}
+.shell-sidebar nav, .shell-sidebar ul, .shell-sidebar li, .shell-sidebar a {
+  width: 100%;
 }
 .shell-stat-card {
   min-width: 0;

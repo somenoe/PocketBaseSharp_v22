@@ -28,14 +28,14 @@
 
     <StatusAlert Message="@statusMessage" IsError="@isError" IsWarning="@isWarning" />
 
-    <div class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+    <div class="grid gap-6 auth-workspace-grid">
         <div class="space-y-6">
             <Card Class="panel-surface p-5">
                 <p class="section-kicker">Admin bootstrap</p>
                 <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Legacy superuser sign-in</h2>
                 <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">These credentials ship with the local PocketBase
-                    data in this repo. The SDK stores the returned token in AuthStore so collection, settings, backup, and
-                    user admin calls can reuse it automatically.</p>
+                    data in this repo. The demo stores the returned token in AuthStore and mirrors it into local storage so
+                    collection, settings, backup, and user admin calls still work after a refresh.</p>
 
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
                         <div>
@@ -131,7 +131,7 @@
 
                         <Card Class="panel-surface p-5">
                             <p class="section-kicker">AuthStore</p>
-                            <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">In-memory session snapshot
+                            <h2 class="font-display text-2xl font-semibold text-slate-900 dark:text-white">Current session snapshot
                             </h2>
 
                             <dl class="mt-5 grid gap-4 sm:grid-cols-2">
@@ -213,7 +213,7 @@
         if (result.IsSuccess)
         {
             authJson = Demo.ToJson(result.Value);
-            SetStatus("Signed in using the legacy admin endpoint and stored the token in AuthStore.");
+            SetStatus("Signed in using the legacy admin endpoint and stored the token in AuthStore plus local storage.");
             return;
         }
 
@@ -246,7 +246,7 @@
         if (result.IsSuccess)
         {
             authJson = Demo.ToJson(result.Value);
-            SetStatus("Signed in as a collection user through UserService.AuthenticateWithPasswordAsync().");
+            SetStatus("Signed in as a collection user through UserService.AuthenticateWithPasswordAsync() and persisted the session.");
             return;
         }
 
@@ -270,7 +270,7 @@
         if (result.IsSuccess)
         {
             authJson = Demo.ToJson(result.Value);
-            SetStatus("Refreshed the user token and updated AuthStore.");
+            SetStatus("Refreshed the user token, updated AuthStore, and re-synced local storage.");
             return;
         }
 
@@ -287,7 +287,7 @@
             Demo.CurrentId,
             Demo.TokenPreview,
         });
-        SetStatus("Cleared the in-memory AuthStore.");
+        SetStatus("Cleared AuthStore and removed the persisted session.");
     }
 
     private void ResetAdminDefaults()

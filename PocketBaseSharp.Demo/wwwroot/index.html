@@ -26,6 +26,31 @@
       } else {
         document.documentElement.classList.remove("dark");
       }
+
+      const demoAuthStorageKey = "pocketbasesharp.demo.auth";
+
+      window.demoAuthStore = {
+        load() {
+          try {
+            const raw = localStorage.getItem(demoAuthStorageKey);
+            return raw ? JSON.parse(raw) : null;
+          } catch {
+            localStorage.removeItem(demoAuthStorageKey);
+            return null;
+          }
+        },
+        save(value) {
+          if (!value) {
+            localStorage.removeItem(demoAuthStorageKey);
+            return;
+          }
+
+          localStorage.setItem(demoAuthStorageKey, JSON.stringify(value));
+        },
+        clear() {
+          localStorage.removeItem(demoAuthStorageKey);
+        },
+      };
     </script>
   </head>
 

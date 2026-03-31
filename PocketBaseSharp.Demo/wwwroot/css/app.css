@@ -100,6 +100,34 @@ html.dark .panel-surface {
     linear-gradient(135deg, rgba(251, 146, 60, 0.12), rgba(56, 189, 248, 0.08));
 }
 
+.shell-command-grid > *,
+.shell-body-grid > *,
+.auth-workspace-grid > * {
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .shell-command-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .shell-body-grid {
+    grid-template-columns: 20rem minmax(0, 1fr);
+  }
+
+  .auth-workspace-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+}
+
+@media (min-width: 1536px) {
+  .shell-body-grid {
+    grid-template-columns: 21rem minmax(0, 1fr);
+  }
+}
+
 html.dark .shell-command-center {
   border-color: rgba(255, 255, 255, 0.1);
   background:
@@ -138,7 +166,16 @@ html.dark .shell-avatar-dot {
 }
 
 .shell-sidebar {
+  width: 100%;
+  min-width: 0;
   box-shadow: 0 28px 80px -44px rgba(15, 23, 42, 0.35);
+}
+
+.shell-sidebar nav,
+.shell-sidebar ul,
+.shell-sidebar li,
+.shell-sidebar a {
+  width: 100%;
 }
 
 .shell-stat-card {

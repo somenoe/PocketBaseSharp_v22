@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using FluentResults;
+using Microsoft.JSInterop;
 using PocketBaseSharp.Event;
 using PocketBaseSharp.Models;
 using PocketBaseSharp.Models.Auth;
@@ -9,10 +10,17 @@ namespace PocketBaseSharp.FlowbiteDemo.Services;
 
 public sealed class DemoPocketBaseService : IDisposable
 {
+    private const string AdminSessionKind = "admin";
+    private const string UserSessionKind = "user";
+
     private readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
     {
         WriteIndented = true
     };
+    private readonly JsonSerializerOptions storageJsonOptions = new(JsonSerializerDefaults.Web);
+    private readonly IJSRuntime js;
+    private bool isInitializingAuthState;
+    private Task? initializeTask;
 
     public const string DefaultBaseUrl = "http://127.0.0.1:8090/";
     public const string DefaultAdminEmail = "admin@admin.com";
@@ -43,12 +51,19 @@ public sealed class DemoPocketBaseService : IDisposable
     public DateTimeOffset? LastRequestAt { get; private set; }
     public string? LastRequestPath => LastRequestUrl?.PathAndQuery;
 
-    public DemoPocketBaseService()
+    public DemoPocketBaseService(IJSRuntime js)
     {
+        this.js = js;
         Client = new PocketBase(BaseUrl);
         Client.BeforeSend += HandleBeforeSend;
         Client.AfterSend += HandleAfterSend;
         Client.AuthStore.OnChange += HandleAuthStoreChanged;
+    }
+
+    public Task InitializeAsync()
+    {
+        initializeTask ??= InitializeCoreAsync();
+        return initializeTask;
     }
 
     public async Task<Result<AdminAuthModel>> SignInAsAdminAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -115,7 +130,120 @@ public sealed class DemoPocketBaseService : IDisposable
 
     private void HandleAuthStoreChanged(object? sender, AuthStoreEvent e)
     {
+        if (!isInitializingAuthState)
+        {
+            _ = PersistAuthStateAsync();
+        }
+
         NotifyChanged();
+    }
+
+    private async Task InitializeCoreAsync()
+    {
+        PersistedAuthState? authState;
+
+        try
+        {
+            authState = await js.InvokeAsync<PersistedAuthState?>("demoAuthStore.load");
+        }
+        catch (JSException)
+        {
+            return;
+        }
+
+        if (authState is null || string.IsNullOrWhiteSpace(authState.Token))
+        {
+            return;
+        }
+
+        var model = DeserializePersistedModel(authState);
+        if (model is null)
+        {
+            await ClearPersistedAuthStateAsync();
+            return;
+        }
+
+        isInitializingAuthState = true;
+        try
+        {
+            Client.AuthStore.Save(authState.Token, model);
+        }
+        finally
+        {
+            isInitializingAuthState = false;
+        }
+
+        if (!Client.AuthStore.IsValid)
+        {
+            Logout();
+        }
+    }
+
+    private IBaseModel? DeserializePersistedModel(PersistedAuthState authState)
+    {
+        if (authState.Model.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        return authState.Kind switch
+        {
+            AdminSessionKind => authState.Model.Deserialize<AdminModel>(storageJsonOptions),
+            UserSessionKind => authState.Model.Deserialize<UserModel>(storageJsonOptions),
+            _ => null,
+        };
+    }
+
+    private async Task PersistAuthStateAsync()
+    {
+        try
+        {
+            if (!Client.AuthStore.IsValid || Client.AuthStore.Model is null || string.IsNullOrWhiteSpace(Client.AuthStore.Token))
+            {
+                await ClearPersistedAuthStateAsync();
+                return;
+            }
+
+            var kind = ResolvePersistedKind(Client.AuthStore.Model);
+            if (kind is null)
+            {
+                await ClearPersistedAuthStateAsync();
+                return;
+            }
+
+            var authState = new PersistedAuthState
+            {
+                Kind = kind,
+                Token = Client.AuthStore.Token,
+                Model = JsonSerializer.SerializeToElement(Client.AuthStore.Model, Client.AuthStore.Model.GetType(), storageJsonOptions),
+            };
+
+            await js.InvokeVoidAsync("demoAuthStore.save", authState);
+        }
+        catch (JSException)
+        {
+        }
+    }
+
+    private async Task ClearPersistedAuthStateAsync()
+    {
+        try
+        {
+            await js.InvokeVoidAsync("demoAuthStore.clear");
+        }
+        catch (JSException)
+        {
+        }
+    }
+
+    private static string? ResolvePersistedKind(IBaseModel model)
+    {
+        return model switch
+        {
+            AdminModel => AdminSessionKind,
+            UserModel => UserSessionKind,
+            _ => null,
+        };
     }
 
     private void NotifyChanged()
@@ -128,5 +256,14 @@ public sealed class DemoPocketBaseService : IDisposable
         Client.BeforeSend -= HandleBeforeSend;
         Client.AfterSend -= HandleAfterSend;
         Client.AuthStore.OnChange -= HandleAuthStoreChanged;
+    }
+
+    private sealed class PersistedAuthState
+    {
+        public string? Kind { get; set; }
+
+        public string? Token { get; set; }
+
+        public JsonElement Model { get; set; }
     }
 }

@@ -12,4 +12,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<DemoPocketBaseService>();
 builder.Services.AddFlowbite();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+await host.Services.GetRequiredService<DemoPocketBaseService>().InitializeAsync();
+await host.RunAsync();
