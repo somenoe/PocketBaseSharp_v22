@@ -1,10 +1,10 @@
 @if (Show)
 {
     <div class="fixed inset-0 z-40 xl:hidden">
-        <button type="button" class="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" @onclick="OnClose"></button>
+        <button type="button" class="absolute inset-0 bg-panel-strong/55 backdrop-blur-sm" @onclick="OnClose"></button>
         <aside class="@ResolvePanelClass()">
             <button type="button"
-                    class="absolute right-4 top-4 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white"
+                    class="absolute right-4 top-4 rounded-full border border-panel-strong-border bg-panel-strong-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-panel-strong-foreground"
                     @onclick="OnClose">
                 Close
             </button>
@@ -29,6 +29,6 @@
     private string ResolvePanelClass()
     {
         var edge = Position == DrawerPosition.Right ? "right-0" : "left-0";
-        return $"absolute top-0 {edge} h-full w-[min(24rem,100vw)] overflow-y-auto border-r border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.98),rgba(2,6,23,0.96))] px-4 pb-6 pt-16 text-white shadow-[0_30px_90px_-36px_rgba(0,0,0,0.7)]";
+        return $"absolute top-0 {edge} h-full w-[min(24rem,100vw)] overflow-y-auto border-r border-panel-strong-border bg-panel-strong px-4 pb-6 pt-16 text-panel-strong-foreground shadow-[0_30px_90px_-36px_rgba(0,0,0,0.7)]";
     }
 }

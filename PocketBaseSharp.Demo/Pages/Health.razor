@@ -6,8 +6,8 @@
 <FeatureHero Title="Health Check"
              Description="A minimal probe against the PocketBase API. This page exercises HealthService.CheckHealthAsync and surfaces the raw model returned by the SDK."
              Eyebrow="Service page" Service="HealthService" Method="CheckHealthAsync()" Access="Public">
-    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
-        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Latest status</p>
+    <div class="rounded-[1.5rem] bg-panel-strong p-5 text-panel-strong-foreground shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-primary/80">Latest status</p>
         <div class="mt-3 flex items-center gap-3">
             <span class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-4xl font-semibold">@(health?.Code?.ToString()
                                 ?? "--")</span>
@@ -16,7 +16,7 @@
                     <Badge Color="@(code >= 200 && code < 300 ? BadgeColor.Success : BadgeColor.Warning)">HTTP @(code)</Badge>
                 }
             </div>
-            <p class="mt-3 text-sm text-slate-300">The bundled PocketBase tests use the same endpoint as their first live
+            <p class="mt-3 text-sm text-panel-strong-muted">The bundled PocketBase tests use the same endpoint as their first live
                 assertion, so this is the fastest way to confirm the local server is reachable.</p>
             </div>
         </FeatureHero>
@@ -25,12 +25,12 @@
 
         <div class="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
             <Card
-                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
-                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                     Action</p>
-                    <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                    <h2 class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                         Probe the server</h2>
-                        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Run the call again to verify that the demo can reach
+                        <p class="mt-3 text-sm text-muted-foreground">Run the call again to verify that the demo can reach
                             <span class="font-semibold">@Demo.BaseUrl</span> and to update the request inspector in the header.
                         </p>
 
@@ -46,12 +46,12 @@
 
                         <dl class="mt-6 grid gap-4 sm:grid-cols-2">
                             <div>
-                                <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Request path</dt>
-                                <dd class="mt-1 text-slate-700 dark:text-slate-200">@(Demo.LastRequestPath ?? "/api/health")</dd>
+                                <dt class="text-xs uppercase tracking-[0.26em] text-muted-foreground/85">Request path</dt>
+                                <dd class="mt-1 text-muted-foreground">@(Demo.LastRequestPath ?? "/api/health")</dd>
                             </div>
                             <div>
-                                <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Observed status</dt>
-                                <dd class="mt-1 text-slate-700 dark:text-slate-200">@(Demo.LastStatusCode is null ? "Pending" :
+                                <dt class="text-xs uppercase tracking-[0.26em] text-muted-foreground/85">Observed status</dt>
+                                <dd class="mt-1 text-muted-foreground">@(Demo.LastStatusCode is null ? "Pending" :
                                                                                                             $"{(int)Demo.LastStatusCode} {Demo.LastStatusCode}")</dd>
                                 </div>
                             </dl>

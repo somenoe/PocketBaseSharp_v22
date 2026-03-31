@@ -8,15 +8,15 @@
              Description="Subscribe to entry collection events and create a record to watch the Server-Sent Events callback fire through RealTimeService."
              Eyebrow="Service page" Service="RealTimeService" Method="SubscribeAsync(), UnsubscribeByTopicAndListenerAsync()"
              Access="Public topic: entry">
-    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
-        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Subscription</p>
+    <div class="rounded-[1.5rem] bg-panel-strong p-5 text-panel-strong-foreground shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-primary/80">Subscription</p>
         <div class="mt-3 flex items-center gap-3">
             <span class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold">@(isSubscribed ? "Live" :
                            "Idle")</span>
                 <Badge Color="@(isSubscribed ? BadgeColor.Success : BadgeColor.Gray)">@(isSubscribed ? "Subscribed to entry" :
                                              "Not subscribed")</Badge>
                 </div>
-                <p class="mt-3 text-sm text-slate-300">The page uses the same topic string as the live integration tests: <span
+                <p class="mt-3 text-sm text-panel-strong-muted">The page uses the same topic string as the live integration tests: <span
                     class="font-semibold text-white">entry</span>.</p>
                 </div>
             </FeatureHero>
@@ -26,11 +26,11 @@
             <div class="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
                 <div class="space-y-6">
                     <Card
-                        Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
-                        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                        Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                        <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                             Controls</p>
                             <h2
-                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                                 Open the event stream</h2>
 
                                 <div class="mt-5 flex flex-wrap gap-3">
@@ -68,14 +68,14 @@
                         </div>
 
                         <Card
-                            Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                            Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                             <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                                 <div>
                                     <p
-                                        class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                                        class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                                         Event log</p>
                                         <h2
-                                            class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                            class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                                             Recent SSE messages</h2>
                                         </div>
                                         <Badge Color="BadgeColor.Gray">Captured: @events.Count</Badge>

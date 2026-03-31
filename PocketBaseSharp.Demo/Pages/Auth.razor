@@ -7,10 +7,10 @@
              Description="This page exercises the SDK auth surfaces that make sense against the bundled PocketBase server: collection auth methods, user registration/login, manual admin bootstrap, and AuthStore inspection."
              Eyebrow="Service page" Service="UserService + AuthStore"
              Method="GetAuthenticationMethodsAsync(), AuthenticateWithPasswordAsync()" Access="Public + admin">
-    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
-        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Current session</p>
+    <div class="rounded-[1.5rem] bg-panel-strong p-5 text-panel-strong-foreground shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-primary/80">Current session</p>
         <p class="mt-2 font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold">@Demo.SessionKind</p>
-        <p class="mt-3 text-sm text-slate-300">PocketBase v0.22 still accepts the legacy <span
+        <p class="mt-3 text-sm text-panel-strong-muted">PocketBase v0.22 still accepts the legacy <span
             class="font-semibold text-white">/api/admins/auth-with-password</span> endpoint, so the demo uses that
             to unlock the other admin-only service pages.</p>
             <div class="mt-4 flex flex-wrap gap-2">
@@ -31,13 +31,13 @@
     <div class="grid gap-6 auth-workspace-grid">
         <div class="space-y-6">
             <Card
-                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
-                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                     Admin bootstrap</p>
                     <h2
-                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                         Legacy superuser sign-in</h2>
-                        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">These credentials ship with the local PocketBase
+                        <p class="mt-3 text-sm text-muted-foreground">These credentials ship with the local PocketBase
                             data in this repo. The demo stores the returned token in AuthStore and mirrors it into local storage so
                             collection, settings, backup, and user admin calls still work after a refresh.</p>
 
@@ -69,14 +69,14 @@
                         </Card>
 
                         <Card
-                            Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
-                            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                            Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                            <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                                 Collection auth</p>
                                 <h2
-                                    class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                    class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                                     Create and sign in a user
                                 </h2>
-                                <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">This uses the user collection wrappers directly
+                                <p class="mt-3 text-sm text-muted-foreground">This uses the user collection wrappers directly
                                     from the SDK. Generate a throwaway account, then sign in as that user to exercise refresh and
                                     current-user flows.</p>
 
@@ -115,13 +115,13 @@
 
                             <div class="space-y-6">
                                 <Card
-                                    Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
-                                    <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                                    Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                                    <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                                         Discovery</p>
                                         <h2
-                                            class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                            class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                                             Available auth methods</h2>
-                                            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">The SDK exposes the collection auth metadata so
+                                            <p class="mt-3 text-sm text-muted-foreground">The SDK exposes the collection auth metadata so
                                                 you can inspect which login methods are currently enabled.</p>
 
                                                 <div class="mt-5 flex flex-wrap gap-3">
@@ -142,32 +142,32 @@
                                             </Card>
 
                                             <Card
-                                                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
-                                                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                                                Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                                                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                                                     AuthStore</p>
                                                     <h2
-                                                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                                                         Current session snapshot
                                                     </h2>
 
                                                     <dl class="mt-5 grid gap-4 sm:grid-cols-2">
                                                         <div>
-                                                            <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Kind</dt>
-                                                            <dd class="mt-1 text-slate-900 dark:text-white">@Demo.SessionKind</dd>
+                                                            <dt class="text-xs uppercase tracking-[0.26em] text-muted-foreground/85">Kind</dt>
+                                                            <dd class="mt-1 text-foreground">@Demo.SessionKind</dd>
                                                         </div>
                                                         <div>
-                                                            <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Current email
+                                                            <dt class="text-xs uppercase tracking-[0.26em] text-muted-foreground/85">Current email
                                                             </dt>
-                                                            <dd class="mt-1 text-slate-900 dark:text-white">@(Demo.CurrentEmail ?? "Not signed in")</dd>
+                                                            <dd class="mt-1 text-foreground">@(Demo.CurrentEmail ?? "Not signed in")</dd>
                                                         </div>
                                                         <div>
-                                                            <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Current id</dt>
-                                                            <dd class="mt-1 break-all text-slate-900 dark:text-white">@(Demo.CurrentId ?? "-")</dd>
+                                                            <dt class="text-xs uppercase tracking-[0.26em] text-muted-foreground/85">Current id</dt>
+                                                            <dd class="mt-1 break-all text-foreground">@(Demo.CurrentId ?? "-")</dd>
                                                         </div>
                                                         <div>
-                                                            <dt class="text-xs uppercase tracking-[0.26em] text-slate-500 dark:text-slate-400">Token preview
+                                                            <dt class="text-xs uppercase tracking-[0.26em] text-muted-foreground/85">Token preview
                                                             </dt>
-                                                            <dd class="mt-1 break-all text-slate-900 dark:text-white">@(Demo.TokenPreview ?? "-")</dd>
+                                                            <dd class="mt-1 break-all text-foreground">@(Demo.TokenPreview ?? "-")</dd>
                                                         </div>
                                                     </dl>
 

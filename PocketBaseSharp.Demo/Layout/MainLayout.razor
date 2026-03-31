@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @implements IDisposable
 @inject DemoPocketBaseService Demo
 @inject IJSRuntime JS
@@ -6,10 +6,10 @@
 
 <div class="relative min-h-screen overflow-hidden">
     <div aria-hidden="true"
-         class="pointer-events-none fixed left-[-7rem] top-[7rem] z-0 h-[15rem] w-[15rem] rounded-full bg-orange-400/35 blur-[60px] opacity-45">
+         class="pointer-events-none fixed left-[-7rem] top-[7rem] z-0 h-[15rem] w-[15rem] rounded-full bg-[var(--glow-primary)] blur-[60px] opacity-45">
     </div>
     <div aria-hidden="true"
-         class="pointer-events-none fixed right-[-5rem] top-[10rem] z-0 h-[18rem] w-[18rem] rounded-full bg-sky-400/25 blur-[60px] opacity-45">
+         class="pointer-events-none fixed right-[-5rem] top-[10rem] z-0 h-[18rem] w-[18rem] rounded-full bg-[var(--glow-info)] blur-[60px] opacity-45">
     </div>
 
     <Drawer Show="@isMobileNavOpen" OnClose="CloseMobileNav" Position="DrawerPosition.Left">
@@ -17,23 +17,23 @@
         <DrawerItems>
             <div class="space-y-6">
                 <Card
-                    Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                    Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                     <p
-                        class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                        class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                         Current session</p>
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <h2
-                                    class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                    class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                                     @Demo.SessionKind</h2>
-                                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@ResolveSessionSummary()</p>
+                                    <p class="mt-2 text-sm text-muted-foreground">@ResolveSessionSummary()</p>
                                 </div>
                                 <Badge Color="@ResolveSessionBadgeColor()">@ResolveAuthLabel()</Badge>
                             </div>
                         </Card>
 
                         <Sidebar
-                            Class="w-full min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 px-3 py-3 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                            Class="w-full min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 px-3 py-3 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                             <SidebarItemGroup>
                                 @foreach (var item in navigationItems)
                                 {
@@ -45,7 +45,7 @@
 
                             <SidebarCTA>
                                 <div class="space-y-3">
-                                    <p class="text-sm text-slate-700 dark:text-slate-300">Use the auth workspace to unlock
+                                    <p class="text-sm text-muted-foreground">Use the auth workspace to unlock
                                         admin-only pages, then jump back into the service page you care about.</p>
                                         <div class="flex flex-wrap gap-2">
                                             <Button Href="/auth" Color="ButtonColor.Primary" Class="w-full sm:w-auto">Open
@@ -63,17 +63,17 @@
                     <div class="relative z-10 pb-12">
                         <div class="mx-auto w-[min(96rem,calc(100%-1.5rem))] space-y-6 pt-4">
                             <Navbar
-                                Class="sticky top-4 z-20 rounded-[2rem] border border-white/50 bg-white/85 px-4 py-3 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)] backdrop-blur dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_24px_90px_-36px_rgba(0,0,0,0.9)] lg:px-6">
+                                Class="sticky top-4 z-20 rounded-[2rem] border border-border/70 bg-card/85 px-4 py-3 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)] backdrop-blur   dark:shadow-[0_24px_90px_-36px_rgba(0,0,0,0.9)] lg:px-6">
                                 <NavbarBrand Href="/">
                                     <div class="flex items-center gap-4">
                                         <div
-                                            class="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#ea580c,#f59e0b_56%,#14b8a6)] font-['Space_Grotesk','Segoe_UI',sans-serif] text-base font-bold tracking-[0.18em] text-white shadow-[0_20px_40px_-24px_rgba(194,65,12,0.75)]">
+                                            class="grid h-12 w-12 place-items-center rounded-2xl bg-[image:var(--gradient-brand)] font-['Space_Grotesk','Segoe_UI',sans-serif] text-base font-bold tracking-[0.18em] text-white shadow-[0_20px_40px_-24px_rgba(194,65,12,0.75)]">
                                             PB</div>
                                             <div>
                                                 <div
-                                                    class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+                                                    class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-lg font-semibold tracking-tight text-foreground">
                                                     PocketBaseSharp</div>
-                                                    <div class="text-xs uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Local
+                                                    <div class="text-xs uppercase tracking-[0.28em] text-muted-foreground/85">Local
                                                         SDK command deck</div>
                                                     </div>
                                                 </div>
@@ -102,19 +102,19 @@
                                                 <Dropdown Inline="true" ArrowIcon="false" Placement="DropdownPlacement.Bottom" MenuClass="w-72">
                                                     <CustomTrigger>
                                                         <div
-                                                            class="flex items-center gap-4 rounded-full border border-slate-300/40 bg-white/75 px-4 py-1.5 pl-4 shadow-[0_18px_44px_-32px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-slate-950/75">
+                                                            class="flex items-center gap-4 rounded-full border border-border/40 bg-card/75 px-4 py-1.5 pl-4 shadow-[0_18px_44px_-32px_rgba(15,23,42,0.45)]  ">
                                                             <div class="hidden min-w-0 text-right sm:block">
-                                                                <div class="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                                                                <div class="truncate text-sm font-semibold text-foreground">
                                                                     @ResolveProfileTitle()</div>
                                                                     <div
-                                                                        class="truncate text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                                                                        class="truncate text-xs uppercase tracking-[0.24em] text-muted-foreground/85">
                                                                         @CurrentNavigationItem.Label</div>
                                                                     </div>
 
                                                                     <div class="relative">
                                                                         <Avatar Rounded="true" Image="favicon.svg" Alt="PocketBaseSharp workspace" />
                                                                         <span
-                                                                        class="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-slate-950 @ResolveSessionDotClass()"></span>
+                                                                        class="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-background @ResolveSessionDotClass()"></span>
                                                                     </div>
                                                                 </div>
                                                             </CustomTrigger>
@@ -123,7 +123,7 @@
                                                                 <DropdownHeader>
                                                                     <span class="block text-sm">@ResolveProfileTitle()</span>
                                                                     <span
-                                                                    class="block truncate text-sm font-medium text-slate-500 dark:text-slate-400">@Demo.BaseUrl</span>
+                                                                    class="block truncate text-sm font-medium text-muted-foreground/85">@Demo.BaseUrl</span>
                                                                 </DropdownHeader>
                                                                 <DropdownItem Icon="@(new HomeIcon())" OnClick="OpenOverview">Open overview</DropdownItem>
                                                                 <DropdownItem Icon="@(new UserIcon())" OnClick="OpenAuth">Open auth workspace</DropdownItem>
@@ -143,18 +143,18 @@
                                                 </Navbar>
 
                                                 <Card
-                                                    Class="min-w-0 overflow-hidden rounded-[1.5rem] border border-white/50 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,255,255,0.76)),linear-gradient(135deg,rgba(251,146,60,0.12),rgba(56,189,248,0.08))] p-0 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.92),rgba(2,6,23,0.86)),linear-gradient(135deg,rgba(251,146,60,0.12),rgba(56,189,248,0.08))] dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                                                    Class="min-w-0 overflow-hidden rounded-[1.5rem] border border-border/70 bg-[image:var(--gradient-surface)] p-0 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                                                     <div class="grid gap-6 px-5 py-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:px-6">
                                                         <div class="space-y-5">
                                                             <div class="flex flex-wrap items-start justify-between gap-4">
                                                                 <div class="space-y-3">
                                                                     <p
-                                                                        class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                                                                        class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                                                                         Workspace control</p>
                                                                         <h2
-                                                                            class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                                                                            class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-3xl font-semibold tracking-tight text-foreground">
                                                                             @CurrentNavigationItem.Label</h2>
-                                                                            <p class="max-w-2xl text-sm text-slate-600 dark:text-slate-300 md:text-base">
+                                                                            <p class="max-w-2xl text-sm text-muted-foreground md:text-base">
                                                                                 @CurrentNavigationItem.Summary</p>
                                                                             </div>
 
@@ -165,7 +165,7 @@
                                                                         </div>
 
                                                                         <Toolbar Embedded="true"
-                                                                                 Class="w-full rounded-[1.25rem] border border-white/40 bg-white/55 px-4 py-3 dark:border-white/10 dark:bg-slate-950/45">
+                                                                                 Class="w-full rounded-[1.25rem] border border-border/60 bg-card/55 px-4 py-3  ">
                                                                             <ChildContent>
                                                                                 <div class="flex flex-wrap items-center gap-2">
                                                                                     <Button Href="/components" Variant="ButtonVariant.Outline" Color="ButtonColor.Gray"
@@ -187,61 +187,61 @@
 
                                                                             <div class="grid gap-3 md:grid-cols-2">
                                                                                 <div
-                                                                                    class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                                                                    class="min-w-0 rounded-[1.25rem] border border-border/35 bg-card/70 p-4  ">
                                                                                     <p
-                                                                                        class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                                                                                        class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-muted-foreground/85">
                                                                                         Route mode</p>
                                                                                         <p
-                                                                                            class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">
+                                                                                            class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-foreground">
                                                                                             @CurrentNavigationItem.Access</p>
-                                                                                            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@ResolveSessionSummary()</p>
+                                                                                            <p class="mt-2 text-sm text-muted-foreground">@ResolveSessionSummary()</p>
                                                                                         </div>
 
                                                                                         <div
-                                                                                            class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                                                                            class="min-w-0 rounded-[1.25rem] border border-border/35 bg-card/70 p-4  ">
                                                                                             <p
-                                                                                                class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                                                                                                class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-muted-foreground/85">
                                                                                                 Next best action</p>
                                                                                                 <p
-                                                                                                    class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">
+                                                                                                    class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-foreground">
                                                                                                     @ResolveNextActionTitle()</p>
-                                                                                                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@ResolveNextActionCopy()</p>
+                                                                                                    <p class="mt-2 text-sm text-muted-foreground">@ResolveNextActionCopy()</p>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
 
                                                                                         <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
                                                                                             <div
-                                                                                                class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                                                                                class="min-w-0 rounded-[1.25rem] border border-border/35 bg-card/70 p-4  ">
                                                                                                 <p
-                                                                                                    class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                                                                                                    class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-muted-foreground/85">
                                                                                                     Endpoint</p>
                                                                                                     <p
-                                                                                                        class="mt-2.5 break-all font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">
+                                                                                                        class="mt-2.5 break-all font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-foreground">
                                                                                                         @TrimBaseUrl()</p>
-                                                                                                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Local PocketBase target</p>
+                                                                                                        <p class="mt-2 text-sm text-muted-foreground">Local PocketBase target</p>
                                                                                                     </div>
 
                                                                                                     <div
-                                                                                                        class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                                                                                        class="min-w-0 rounded-[1.25rem] border border-border/35 bg-card/70 p-4  ">
                                                                                                         <p
-                                                                                                            class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                                                                                                            class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-muted-foreground/85">
                                                                                                             Last request</p>
                                                                                                             <p
-                                                                                                                class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">
+                                                                                                                class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-foreground">
                                                                                                                 @ResolveRequestHeadline()</p>
-                                                                                                                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@ResolveRequestPathSummary()</p>
+                                                                                                                <p class="mt-2 text-sm text-muted-foreground">@ResolveRequestPathSummary()</p>
                                                                                                             </div>
 
                                                                                                             <div
-                                                                                                                class="min-w-0 rounded-[1.25rem] border border-slate-300/20 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-950/55">
+                                                                                                                class="min-w-0 rounded-[1.25rem] border border-border/35 bg-card/70 p-4  ">
                                                                                                                 <p
-                                                                                                                    class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                                                                                                                    class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-muted-foreground/85">
                                                                                                                     HTTP status</p>
                                                                                                                     <p
-                                                                                                                        class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-slate-900 dark:text-white">
+                                                                                                                        class="mt-2.5 font-['Space_Grotesk','Segoe_UI',sans-serif] text-[1.35rem] font-bold leading-tight text-foreground">
                                                                                                                         @ResolveStatusHeadline()</p>
-                                                                                                                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@ResolveStatusCopy()</p>
+                                                                                                                        <p class="mt-2 text-sm text-muted-foreground">@ResolveStatusCopy()</p>
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
@@ -250,16 +250,16 @@
                                                                                                         <div class="grid gap-6 xl:grid-cols-[20rem_minmax(0,1fr)] 2xl:grid-cols-[21rem_minmax(0,1fr)]">
                                                                                                             <aside class="hidden xl:block space-y-6">
                                                                                                                 <Card
-                                                                                                                    Class="min-w-0 sticky top-28 overflow-hidden rounded-[1.5rem] border border-white/50 bg-white/80 p-0 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
-                                                                                                                    <div class="border-b border-black/5 px-5 py-4 dark:border-white/10">
+                                                                                                                    Class="min-w-0 sticky top-28 overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/80 p-0 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                                                                                                                    <div class="border-b border-border/60 px-5 py-4 ">
                                                                                                                         <p
-                                                                                                                            class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                                                                                                                            class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                                                                                                                             Demo navigation</p>
                                                                                                                             <h2
-                                                                                                                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-xl font-semibold text-slate-900 dark:text-white">
+                                                                                                                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-xl font-semibold text-foreground">
                                                                                                                                 SDK feature
                                                                                                                                 map</h2>
-                                                                                                                                <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Tailwind-first pages for each
+                                                                                                                                <p class="mt-2 text-sm text-muted-foreground/85">Tailwind-first pages for each
                                                                                                                                     service area in the local PocketBase test stack.</p>
                                                                                                                                 </div>
 
@@ -275,7 +275,7 @@
 
                                                                                                                                     <SidebarCTA>
                                                                                                                                         <div class="space-y-3">
-                                                                                                                                            <p class="text-sm text-slate-700 dark:text-slate-300">Point your local PocketBase
+                                                                                                                                            <p class="text-sm text-muted-foreground">Point your local PocketBase
                                                                                                                                                 server at <span class="font-semibold">@Demo.BaseUrl</span>.</p>
                                                                                                                                                 <div class="flex flex-wrap gap-2">
                                                                                                                                                     <Button Href="/health" Color="ButtonColor.Primary" Class="w-full">Ping health
@@ -289,15 +289,15 @@
                                                                                                                                     </Card>
 
                                                                                                                                     <Card
-                                                                                                                                        Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                                                                                                                                        Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                                                                                                                                         <p
-                                                                                                                                            class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                                                                                                                                            class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                                                                                                                                             Activity</p>
                                                                                                                                             <h2
-                                                                                                                                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-xl font-semibold text-slate-900 dark:text-white">
+                                                                                                                                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-xl font-semibold text-foreground">
                                                                                                                                                 Request digest
                                                                                                                                             </h2>
-                                                                                                                                            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">@ResolveRequestSummary()</p>
+                                                                                                                                            <p class="mt-2 text-sm text-muted-foreground">@ResolveRequestSummary()</p>
 
                                                                                                                                             <div class="mt-4 flex flex-wrap gap-2">
                                                                                                                                                 <Badge Color="BadgeColor.Info">@Demo.SessionKind</Badge>
@@ -316,7 +316,7 @@
 
                                                                                                                                         <main class="min-w-0 space-y-6">
                                                                                                                                             <Card
-                                                                                                                                                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 px-5 py-4 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                                                                                                                                                Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 px-5 py-4 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                                                                                                                                                 <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                                                                                                                                                     <Breadcrumb>
                                                                                                                                                         <BreadcrumbItem Href="/">
@@ -497,8 +497,8 @@
     private string ResolveSessionDotClass()
     {
         return Demo.IsAuthenticated
-            ? "bg-emerald-400"
-            : "bg-amber-400";
+            ? "bg-success"
+            : "bg-warning";
     }
 
     private string TrimBaseUrl()

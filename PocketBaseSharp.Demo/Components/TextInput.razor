@@ -6,7 +6,7 @@
     @if (Icon is not null)
     {
         <div
-            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500">
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground/75">
             <IconRenderer Icon="@Icon" Class="h-4 w-4" />
         </div>
     }
@@ -79,6 +79,6 @@
     {
         var padding = Icon is null ? "px-4" : "pl-10 pr-4";
         var disabled = Disabled ? "cursor-not-allowed opacity-60" : string.Empty;
-        return $"min-h-11 w-full rounded-[1rem] border border-slate-300/60 bg-white/85 {padding} py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-orange-400 focus:ring-4 focus:ring-orange-200/60 dark:border-white/10 dark:bg-slate-950/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-orange-400/60 dark:focus:ring-orange-500/15 {disabled}";
+        return $"min-h-11 w-full rounded-[1rem] border border-input bg-card/85 {padding} py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-4 focus:ring-primary/15 {disabled}";
     }
 }

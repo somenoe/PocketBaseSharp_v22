@@ -6,10 +6,10 @@
 <FeatureHero Title="Collections"
              Description="Inspect the PocketBase schema through CollectionService. This page lists the available collections and lets you fetch a specific collection by name to inspect its schema payload."
              Eyebrow="Service page" Service="CollectionService" Method="ListAsync(), GetByNameAsync()" Access="Admin required">
-    <div class="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
-        <p class="text-xs uppercase tracking-[0.3em] text-orange-200">Focus</p>
+    <div class="rounded-[1.5rem] bg-panel-strong p-5 text-panel-strong-foreground shadow-[0_24px_70px_-36px_rgba(15,23,42,0.85)]">
+        <p class="text-xs uppercase tracking-[0.3em] text-primary/80">Focus</p>
         <p class="mt-2 font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold">Schema inspection</p>
-        <p class="mt-3 text-sm text-slate-300">Use the lookup control to jump straight to <span
+        <p class="mt-3 text-sm text-panel-strong-muted">Use the lookup control to jump straight to <span
             class="font-semibold text-white">entry</span>, <span class="font-semibold text-white">todos</span>, or
             <span class="font-semibold text-white">users</span>.
         </p>
@@ -20,7 +20,7 @@
 {
     <StatusAlert Message="Open Auth and sign in as admin before calling CollectionService." IsWarning="true" />
     <Card
-        Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+        Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
         <Button Href="/auth" Color="ButtonColor.Primary">Go to auth</Button>
     </Card>
 }
@@ -31,11 +31,11 @@ else
     <div class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <div class="space-y-6">
             <Card
-                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
-                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                <p class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                     Lookup</p>
                     <h2
-                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                        class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                         Fetch a collection by name
                     </h2>
 
@@ -62,14 +62,14 @@ else
             </div>
 
             <Card
-                Class="min-w-0 rounded-[1.5rem] border border-white/50 bg-white/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
+                Class="min-w-0 rounded-[1.5rem] border border-border/70 bg-card/80 p-5 shadow-[0_28px_80px_-44px_rgba(15,23,42,0.35)] backdrop-blur-xl   dark:shadow-[0_30px_90px_-42px_rgba(0,0,0,0.9)]">
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
                         <p
-                            class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-orange-600 dark:text-orange-300">
+                            class="mb-1.5 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-primary">
                             Browse</p>
                             <h2
-                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-slate-900 dark:text-white">
+                                class="font-['Space_Grotesk','Segoe_UI',sans-serif] text-2xl font-semibold text-foreground">
                                 Collections in the local
                                 server</h2>
                             </div>

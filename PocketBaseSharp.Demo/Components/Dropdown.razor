@@ -30,5 +30,5 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string ResolveMenuClass() => $"absolute right-0 z-30 mt-3 overflow-hidden rounded-[1.25rem] border border-slate-200/80 bg-white/95 p-2 shadow-[0_24px_70px_-34px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/95 {MenuClass}".Trim();
+    private string ResolveMenuClass() => $"absolute right-0 z-30 mt-3 overflow-hidden rounded-[1.25rem] border border-border/70 bg-popover/95 p-2 shadow-[0_24px_70px_-34px_rgba(15,23,42,0.45)] backdrop-blur-xl {MenuClass}".Trim();
 }

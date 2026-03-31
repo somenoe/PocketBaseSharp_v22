@@ -27,8 +27,8 @@
         }
 
         var active = string.Equals(current, Href, StringComparison.OrdinalIgnoreCase)
-            ? "bg-orange-500 text-white shadow-[0_18px_40px_-28px_rgba(234,88,12,0.7)]"
-            : "text-slate-700 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-900/80 dark:hover:text-white";
+            ? "bg-primary text-primary-foreground shadow-lg"
+            : "text-muted-foreground hover:bg-accent/80 hover:text-accent-foreground";
 
         return $"flex items-center gap-3 rounded-[1rem] px-3 py-2.5 text-sm font-semibold transition {active}";
     }

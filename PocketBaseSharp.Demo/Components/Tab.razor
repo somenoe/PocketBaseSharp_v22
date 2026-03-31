@@ -26,8 +26,8 @@
     {
         var isActive = Tabs?.SelectedIndex == Index;
         var active = isActive
-            ? "bg-orange-500 text-white shadow-[0_18px_40px_-28px_rgba(234,88,12,0.65)]"
-            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white";
+            ? "bg-primary text-primary-foreground shadow-lg"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
         return $"inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition {active}";
     }
 }

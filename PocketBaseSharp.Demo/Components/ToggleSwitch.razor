@@ -1,10 +1,10 @@
 <label class="inline-flex cursor-pointer items-center gap-3">
     <span class="relative inline-flex h-6 w-11 items-center">
         <input type="checkbox" class="peer sr-only" checked="@Checked" @onchange="HandleChange" />
-        <span class="absolute inset-0 rounded-full bg-slate-300 transition peer-checked:bg-emerald-500 dark:bg-slate-700"></span>
-        <span class="absolute left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition peer-checked:translate-x-5"></span>
+        <span class="absolute inset-0 rounded-full bg-input transition peer-checked:bg-success"></span>
+        <span class="absolute left-0.5 h-5 w-5 rounded-full bg-background shadow-sm transition peer-checked:translate-x-5"></span>
     </span>
-    <span class="text-sm font-medium text-slate-700 dark:text-slate-200">@Label</span>
+    <span class="text-sm font-medium text-foreground">@Label</span>
 </label>
 
 @code {

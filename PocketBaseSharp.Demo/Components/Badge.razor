@@ -13,12 +13,12 @@
     {
         var palette = Color switch
         {
-            BadgeColor.Primary => "bg-orange-100 text-orange-700 ring-orange-200 dark:bg-orange-500/15 dark:text-orange-200 dark:ring-orange-400/30",
-            BadgeColor.Info => "bg-sky-100 text-sky-700 ring-sky-200 dark:bg-sky-500/15 dark:text-sky-200 dark:ring-sky-400/30",
-            BadgeColor.Success => "bg-emerald-100 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:ring-emerald-400/30",
-            BadgeColor.Warning => "bg-amber-100 text-amber-800 ring-amber-200 dark:bg-amber-500/15 dark:text-amber-100 dark:ring-amber-400/30",
-            BadgeColor.Pink => "bg-rose-100 text-rose-700 ring-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:ring-rose-400/30",
-            _ => "bg-slate-100 text-slate-700 ring-slate-200 dark:bg-slate-800/70 dark:text-slate-200 dark:ring-slate-700",
+            BadgeColor.Primary => "bg-primary/12 text-primary ring-primary/20",
+            BadgeColor.Info => "bg-info/12 text-info ring-info/20",
+            BadgeColor.Success => "bg-success/12 text-success ring-success/20",
+            BadgeColor.Warning => "bg-warning/14 text-warning ring-warning/20",
+            BadgeColor.Pink => "bg-destructive/12 text-destructive ring-destructive/20",
+            _ => "bg-muted text-muted-foreground ring-border",
         };
 
         return $"inline-flex items-center rounded-full px-3 py-1 text-[0.72rem] font-semibold uppercase tracking-[0.18em] ring-1 ring-inset {palette}";
