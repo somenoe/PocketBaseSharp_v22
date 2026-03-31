@@ -318,16 +318,19 @@
                                                                                                                                                 <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                                                                                                                                                     <Breadcrumb>
                                                                                                                                                         <BreadcrumbItem Href="/">
-                                                                                                                                                            <HomeIcon class="mr-2 h-4 w-4" />
-                                                                                                                                                            Home
+                                                                                                                                                            <span class="inline-flex items-center gap-2 leading-none">
+                                                                                                                                                                <HomeIcon class="h-4 w-4 shrink-0" />
+                                                                                                                                                                <span>Home</span>
+                                                                                                                                                            </span>
                                                                                                                                                         </BreadcrumbItem>
                                                                                                                                                         @if (CurrentPath == "/")
                                                                                                                                                         {
-                                                                                                                                                            <BreadcrumbItem>Overview</BreadcrumbItem>
+                                                                                                                                                            <BreadcrumbItem><span class="leading-none">Overview</span></BreadcrumbItem>
                                                                                                                                                         }
                                                                                                                                                         else
                                                                                                                                                         {
-                                                                                                                                                            <BreadcrumbItem Href="@CurrentNavigationItem.Href">@CurrentNavigationItem.Label
+                                                                                                                                                            <BreadcrumbItem Href="@CurrentNavigationItem.Href"><span
+                                                                                                                                                                class="leading-none">@CurrentNavigationItem.Label</span>
                                                                                                                                                             </BreadcrumbItem>
                                                                                                                                                         }
                                                                                                                                                     </Breadcrumb>
