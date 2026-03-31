@@ -379,3 +379,6 @@ PocketBase/pb_data/data.db-wal
 PocketBase/pb_data/logs.db-shm
 PocketBase/pb_data/logs.db-wal
 temp_pb_data/
+
+# Code coverage results
+CoverageResults

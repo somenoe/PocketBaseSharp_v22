@@ -19,9 +19,15 @@ download-pb:
     rm pocketbase.temp.zip
 
 setup: download-pb
+    dotnet tool install -g dotnet-reportgenerator-globaltool
 
 build:
     dotnet build
 
 test:
     dotnet test
+
+test-coverage:
+    @if (Test-Path ./CoverageResults) { Remove-Item ./CoverageResults -Force -Recurse }
+    dotnet test --collect:"XPlat Code Coverage" --results-directory ./CoverageResults
+    @if (Test-Path ./CoverageResults) { reportgenerator -reports:"CoverageResults/**/*.xml" -targetdir:"CoverageResults" -reporttypes:TextSummary }
