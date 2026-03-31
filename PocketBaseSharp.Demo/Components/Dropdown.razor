@@ -1,0 +1,34 @@
+<details class="relative">
+    <summary class="list-none cursor-pointer [&::-webkit-details-marker]:hidden">
+        @(CustomTrigger ?? ChildContent)
+    </summary>
+
+    @if (CustomTrigger is not null && ChildContent is not null)
+    {
+        <div class="@ResolveMenuClass()">
+            @ChildContent
+        </div>
+    }
+</details>
+
+@code {
+    [Parameter]
+    public bool Inline { get; set; }
+
+    [Parameter]
+    public string? ArrowIcon { get; set; }
+
+    [Parameter]
+    public DropdownPlacement Placement { get; set; } = DropdownPlacement.Bottom;
+
+    [Parameter]
+    public string? MenuClass { get; set; }
+
+    [Parameter]
+    public RenderFragment? CustomTrigger { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string ResolveMenuClass() => $"absolute right-0 z-30 mt-3 overflow-hidden rounded-[1.25rem] border border-slate-200/80 bg-white/95 p-2 shadow-[0_24px_70px_-34px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/95 {MenuClass}".Trim();
+}

@@ -1,0 +1,13 @@
+<nav class="@ResolveClass()">
+    @ChildContent
+</nav>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string ResolveClass() => $"space-y-4 {Class}".Trim();
+}

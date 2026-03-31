@@ -1,0 +1,13 @@
+<tbody class="@ResolveClass()">
+    @ChildContent
+</tbody>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string ResolveClass() => Class ?? string.Empty;
+}

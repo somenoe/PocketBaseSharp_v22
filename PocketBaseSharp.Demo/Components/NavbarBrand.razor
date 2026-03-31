@@ -1,0 +1,11 @@
+<a href="@Href" class="inline-flex min-w-0 items-center">
+    @ChildContent
+</a>
+
+@code {
+    [Parameter]
+    public string? Href { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

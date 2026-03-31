@@ -1,0 +1,24 @@
+<table class="@ResolveClass()">
+    @ChildContent
+</table>
+
+@code {
+    [Parameter]
+    public bool Striped { get; set; }
+
+    [Parameter]
+    public bool Hoverable { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string ResolveClass()
+    {
+        var striped = Striped ? "[&_tbody_tr:nth-child(even)]:bg-slate-50/70 dark:[&_tbody_tr:nth-child(even)]:bg-slate-900/45" : string.Empty;
+        var hoverable = Hoverable ? "[&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-orange-50/70 dark:[&_tbody_tr:hover]:bg-slate-900/75" : string.Empty;
+        return $"min-w-full border-separate border-spacing-0 text-left text-sm text-slate-700 dark:text-slate-200 {striped} {hoverable} {Class}".Trim();
+    }
+}

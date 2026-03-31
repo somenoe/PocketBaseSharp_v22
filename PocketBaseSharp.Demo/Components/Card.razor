@@ -1,0 +1,27 @@
+@if (!string.IsNullOrWhiteSpace(Href))
+{
+    <a href="@Href" class="@ResolveClass()">
+        @ChildContent
+    </a>
+}
+else
+{
+    <div class="@ResolveClass()">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Href { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string ResolveClass() => string.IsNullOrWhiteSpace(Href)
+        ? Class ?? string.Empty
+        : $"block {Class}".Trim();
+}

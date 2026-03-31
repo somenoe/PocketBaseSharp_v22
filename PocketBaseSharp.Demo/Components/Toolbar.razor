@@ -1,0 +1,32 @@
+<div class="@ResolveClass()">
+    <div class="min-w-0 flex-1">
+        @ChildContent
+    </div>
+
+    @if (End is not null)
+    {
+        <div class="flex shrink-0 items-center gap-3">
+            @End
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public bool Embedded { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? End { get; set; }
+
+    private string ResolveClass()
+    {
+        var embedded = Embedded ? string.Empty : "mb-6";
+        return $"flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between {embedded} {Class}".Trim();
+    }
+}

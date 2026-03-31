@@ -1,0 +1,14 @@
+<span class="inline-flex" title="@Content">
+    @ChildContent
+</span>
+
+@code {
+    [Parameter]
+    public string? Content { get; set; }
+
+    [Parameter]
+    public TooltipPlacement Placement { get; set; } = TooltipPlacement.Top;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

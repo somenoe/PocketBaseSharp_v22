@@ -1,0 +1,8 @@
+<thead class="border-b border-black/5 text-xs uppercase tracking-[0.22em] text-slate-500 dark:border-white/10 dark:text-slate-400">
+    @ChildContent
+</thead>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

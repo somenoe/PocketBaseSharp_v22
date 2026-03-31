@@ -1,0 +1,20 @@
+@if (Icon is not null)
+{
+    <DynamicComponent Type="@Icon.GetType()" Parameters="@ResolvedParameters" />
+}
+
+@code {
+    [Parameter]
+    public IconBase? Icon { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    private IDictionary<string, object>? ResolvedParameters =>
+        string.IsNullOrWhiteSpace(Class)
+            ? null
+            : new Dictionary<string, object>
+            {
+                [nameof(IconBase.Class)] = Class,
+            };
+}

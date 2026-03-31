@@ -1,0 +1,8 @@
+<td class="px-4 py-3 align-top first:rounded-bl-[1rem] last:rounded-br-[1rem]">
+    @ChildContent
+</td>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

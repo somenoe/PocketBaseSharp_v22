@@ -1,0 +1,84 @@
+@typeparam TValue
+@using System.Globalization
+@using System.Linq.Expressions
+
+<div class="@ResolveWrapperClass()">
+    @if (Icon is not null)
+    {
+        <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500">
+            <IconRenderer Icon="@Icon" Class="h-4 w-4" />
+        </div>
+    }
+
+    @if (Behavior == InputBehavior.OnInput)
+    {
+        <input id="@Id" type="@Type" value="@BindConverter.FormatValue(Value)" placeholder="@Placeholder"
+               class="@ResolveInputClass()" disabled="@Disabled" @oninput="HandleChange" />
+    }
+    else
+    {
+        <input id="@Id" type="@Type" value="@BindConverter.FormatValue(Value)" placeholder="@Placeholder"
+               class="@ResolveInputClass()" disabled="@Disabled" @onchange="HandleChange" />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    [Parameter]
+    public string Type { get; set; } = "text";
+
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public InputBehavior Behavior { get; set; } = InputBehavior.OnChange;
+
+    [Parameter]
+    public int DebounceDelay { get; set; }
+
+    [Parameter]
+    public IconBase? Icon { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public TValue? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<TValue?> ValueChanged { get; set; }
+
+    [Parameter]
+    public Expression<Func<TValue?>>? ValueExpression { get; set; }
+
+    private async Task HandleChange(ChangeEventArgs args)
+    {
+        var incoming = args.Value?.ToString();
+
+        if (typeof(TValue) == typeof(string))
+        {
+            await ValueChanged.InvokeAsync((TValue?)(object?)incoming);
+            return;
+        }
+
+        if (BindConverter.TryConvertTo<TValue>(incoming, CultureInfo.CurrentCulture, out var parsed))
+        {
+            await ValueChanged.InvokeAsync(parsed);
+        }
+    }
+
+    private string ResolveWrapperClass() => $"relative {Class}".Trim();
+
+    private string ResolveInputClass()
+    {
+        var padding = Icon is null ? "px-4" : "pl-10 pr-4";
+        var disabled = Disabled ? "cursor-not-allowed opacity-60" : string.Empty;
+        return $"min-h-11 w-full rounded-[1rem] border border-slate-300/60 bg-white/85 {padding} py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-orange-400 focus:ring-4 focus:ring-orange-200/60 dark:border-white/10 dark:bg-slate-950/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-orange-400/60 dark:focus:ring-orange-500/15 {disabled}";
+    }
+}

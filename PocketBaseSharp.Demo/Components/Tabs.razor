@@ -1,0 +1,25 @@
+<CascadingValue Value="this">
+    <div class="space-y-4">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public TabVariant Variant { get; set; } = TabVariant.Default;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    internal int SelectedIndex { get; private set; }
+
+    internal string TabListClass => Variant == TabVariant.Pills
+        ? "inline-flex flex-wrap gap-2 rounded-[1.25rem] border border-white/40 bg-white/70 p-2 dark:border-white/10 dark:bg-slate-950/60"
+        : "inline-flex flex-wrap gap-2";
+
+    internal void Select(int index)
+    {
+        SelectedIndex = index;
+        StateHasChanged();
+    }
+}

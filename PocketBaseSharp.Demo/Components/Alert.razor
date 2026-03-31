@@ -1,0 +1,54 @@
+<div class="@ResolveClass()" role="alert">
+    @if (Icon is not null)
+    {
+        <div class="mt-0.5 shrink-0 text-current">
+            <IconRenderer Icon="@Icon" Class="h-5 w-5" />
+        </div>
+    }
+
+    <div class="min-w-0">
+        @if (!string.IsNullOrWhiteSpace(TextEmphasis))
+        {
+            <p class="text-sm font-semibold uppercase tracking-[0.22em]">@TextEmphasis</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Text))
+        {
+            <p class="mt-1 text-sm leading-6">@Text</p>
+        }
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public AlertColor Color { get; set; } = AlertColor.Info;
+
+    [Parameter]
+    public IconBase? Icon { get; set; }
+
+    [Parameter]
+    public string? TextEmphasis { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public bool WithBorderAccent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string ResolveClass()
+    {
+        var palette = Color switch
+        {
+            AlertColor.Warning => "border-amber-200/80 bg-amber-50/90 text-amber-900 dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-100",
+            AlertColor.Success => "border-emerald-200/80 bg-emerald-50/90 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-100",
+            AlertColor.Failure => "border-rose-200/80 bg-rose-50/90 text-rose-900 dark:border-rose-400/20 dark:bg-rose-500/10 dark:text-rose-100",
+            _ => "border-sky-200/80 bg-sky-50/90 text-sky-900 dark:border-sky-400/20 dark:bg-sky-500/10 dark:text-sky-100",
+        };
+
+        var accent = WithBorderAccent ? "border-l-4" : "border";
+        return $"mb-6 flex items-start gap-3 rounded-[1.25rem] {accent} {palette} px-4 py-3 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.45)]";
+    }
+}

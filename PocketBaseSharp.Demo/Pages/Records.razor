@@ -36,7 +36,7 @@
                                 <div class="mb-2 block">
                                     <Label For="create-name" Value="Name" />
                                 </div>
-                                <TextInput TValue="string" Id="create-name" @bind-Value="createName" Placeholder="flowbite entry" />
+                                <TextInput TValue="string" Id="create-name" @bind-Value="createName" Placeholder="demo entry" />
                             </div>
 
                             <ToggleSwitch @bind-Checked="createDone" Label="Mark as completed" />
@@ -111,8 +111,7 @@
                                             <div class="mb-2 block">
                                                 <Label For="record-filter" Value="PocketBase filter expression" />
                                             </div>
-                                            <TextInput TValue="string" Id="record-filter" @bind-Value="filterExpression" Placeholder="name ~ \"
-                                                       demo\"" />
+                                            <TextInput TValue="string" Id="record-filter" @bind-Value="filterExpression" Placeholder='name ~ "demo"' />
                                         </div>
                                     </div>
 
@@ -178,7 +177,7 @@
 @code {
     private readonly List<EntryRecord> entries = [];
     private EntryRecord editor = new();
-    private string createName = $"flowbite-entry-{DateTimeOffset.UtcNow:HHmmss}";
+    private string createName = $"demo-entry-{DateTimeOffset.UtcNow:HHmmss}";
     private bool createDone;
     private string filterExpression = string.Empty;
     private string? recordsJson;
@@ -250,7 +249,7 @@
 
         if (result.IsSuccess)
         {
-            createName = $"flowbite-entry-{DateTimeOffset.UtcNow:HHmmss}";
+            createName = $"demo-entry-{DateTimeOffset.UtcNow:HHmmss}";
             createDone = false;
             recordsJson = Demo.ToJson(result.Value);
             await LoadEntriesAsync($"Created entry {result.Value.Id}.");

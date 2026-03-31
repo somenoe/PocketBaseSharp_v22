@@ -1,0 +1,18 @@
+<img src="@Image" alt="@Alt" class="@ResolveClass()" />
+
+@code {
+    [Parameter]
+    public string? Image { get; set; }
+
+    [Parameter]
+    public string? Alt { get; set; }
+
+    [Parameter]
+    public bool Rounded { get; set; }
+
+    private string ResolveClass()
+    {
+        var rounded = Rounded ? "rounded-full" : "rounded-2xl";
+        return $"h-11 w-11 object-cover ring-1 ring-slate-300/50 dark:ring-white/10 {rounded}";
+    }
+}

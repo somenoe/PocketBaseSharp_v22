@@ -1,0 +1,8 @@
+<div class="border-b border-black/5 px-3 py-2.5 dark:border-white/10">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

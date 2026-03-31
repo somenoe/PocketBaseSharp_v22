@@ -1,0 +1,13 @@
+<header class="@ResolveClass()">
+    @ChildContent
+</header>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string ResolveClass() => $"flex flex-wrap items-center justify-between gap-4 {Class}".Trim();
+}

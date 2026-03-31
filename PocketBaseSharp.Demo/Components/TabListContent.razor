@@ -1,0 +1,14 @@
+@if (Tabs is not null)
+{
+    <div class="@Tabs.TabListClass">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public Tabs? Tabs { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
